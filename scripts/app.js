@@ -52,6 +52,48 @@ function loadGBIF(callback) {
   timeline = new gbif.ui.view.Timeline({
     container: $("body")
   });
+
+    var drawnItems = new L.FeatureGroup();
+    map.addLayer(drawnItems);
+
+    var drawControl = new L.Control.Draw({
+      draw: {
+        position: 'topleft',
+        polygon: {
+          title: 'Draw a sexy polygon!',
+          allowIntersection: false,
+          drawError: {
+            color: '#b00b00',
+            timeout: 1000
+          },
+          shapeOptions: {
+            color: '#bada55'
+          },
+          showArea: true
+        },
+        circle: {
+          shapeOptions: {
+            color: '#662d91'
+          }
+        }
+      },
+      edit: {
+        featureGroup: drawnItems
+      }
+    });
+    map.addControl(drawControl);
+
+    map.on('draw:created', function (e) {
+      var type = e.layerType,
+        layer = e.layer;
+
+      if (type === 'marker') {
+        layer.bindPopup('A popup!');
+      }
+
+      drawnItems.addLayer(layer);
+    });
+
 }
 
 $(function() {

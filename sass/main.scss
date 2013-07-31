@@ -44,24 +44,55 @@ strong { font-weight: bold; }
   outline: none;
 }
 
+.analysis_explanation {
+  position: absolute;
+  right: 5px;
+  width: 445px;
+  height: 38px;
+  @include border-radius(5px);
+  overflow: hidden;
+
+  p {
+    display: block;
+    float: right;
+    margin-right: -256px;
+    padding: 0 20px 0 10px;
+    line-height: 38px;
+    font-size: 13px;
+    background: rgba(#000, .7);
+    color: #fff;
+    @include border-radius(5px);
+  }
+}
+
 .analysis {
+  position: absolute;
+  right: 0;
   display: inline-block;
-  width: auto;
+  width: 100px;
   line-height: 36px;
   padding: 0 10px 0 15px;
   font-size: 14px;
   color: #FF2626;
   text-decoration: none;
+  text-align: center;
 
   i {
     display: block;
     position: absolute;
     top: 7px;
-    left: -10px;
+    left: -11px;
     height: 22px;
     width: 22px;
     background: image-url('analysis.png');
+    @include transition(all, .15s);
+
+    &.active { @include rotate(45deg); }
   }
+}
+
+.fullscreen {
+  background: #fff image-url('fullscreen.png') no-repeat center;
 }
 
 

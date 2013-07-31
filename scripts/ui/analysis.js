@@ -1,10 +1,3 @@
-gbif.ui.model.AnalysisButton = Backbone.Model.extend({
-  defaults: {
-    active: false,
-    text: "Report an error"
-  }
-});
-
 gbif.ui.view.AnalysisButton = Backbone.View.extend({
   className: 'analysis_control',
 
@@ -13,8 +6,6 @@ gbif.ui.view.AnalysisButton = Backbone.View.extend({
   },
 
   initialize: function() {
-    this.model = new gbif.ui.model.AnalysisButton();
-
     var template = $("#analysis_control-template").html();
 
     this.template = new gbif.core.Template({
@@ -22,27 +13,80 @@ gbif.ui.view.AnalysisButton = Backbone.View.extend({
     });
   },
 
+  enable: function() {
+    this.model.set("active", true);
+    this.model.set("buttontext", "Cancel");
+  },
+
+  disable: function() {
+    this.model.set("active", false);
+    this.model.set("buttontext", "Report an error");
+  },
+
+  _onClickButton: function() {
+    var self = this;
+
+    if(!this.model.get("active")) {
+      analysis.startAnalysis();
+
+      this.$el.find("i").addClass("active");
+      this.$el.find(".analysis span").text(this.model.get("buttontext"));
+
+      setTimeout(function() {
+        self.$el.find(".analysis").animate({
+          'width': 50
+        }, 150);
+
+        self.$el.find(".analysis_explanation p").animate({
+          'margin-right': 67
+        }, 150);
+      }, 150);
+    } else {
+      analysis.stopAnalysis();
+
+      this.$el.find(".analysis").animate({
+        'width': 100
+      }, 150, function() {
+        self.$el.find(".analysis_explanation p").animate({
+          'margin-right': -256
+        }, 150, function() {
+          self.$el.find("i").removeClass("active");
+          self.$el.find(".analysis span").text(self.model.get("buttontext"));
+        });
+      });
+    }
+  },
+
   render: function() {
     this.$el.html(this.template.render( this.model.toJSON() ));
+
+    this.$explanation = this.$el.find(".analysis_explanation");
 
     return this.$el;
   }
 });
 
 
-gbif.ui.model.Analysis = Backbone.Model.extend();
+gbif.ui.model.Analysis = Backbone.Model.extend({
+  defaults: {
+    active: false,
+    buttontext: "Report an error"
+  }
+});
 
 gbif.ui.view.Analysis = gbif.core.View.extend({
-
   initialize: function() {
-    // _.bindAll(this, "_clearAnalysis", "_onOverlayComplete", "_clearSelection");
+    this.model = new gbif.ui.model.Analysis();
+
+    _.bindAll(this, "_toggleAnalysis");
+
+    // bindings
+    this.model.bind("change:active", this._toggleAnalysis);
 
     this.map = this.options.map;
     this.analyzing = false;
     this.selectedShapes = [];
     this.selectedShape;
-
-    this.model = new gbif.ui.model.Analysis();
   },
 
   _clearAnalysis: function() {
@@ -55,22 +99,30 @@ gbif.ui.view.Analysis = gbif.core.View.extend({
       this.drawingManager.path = null;
     }
 
-    this.button._enableButton();
+    this.button.disableButton();
   },
 
-  startAnalyzing: function() {
-    this._clearAnalysis();
-    this._setupDrawingManager();
-    this.analyzing = true;
+  startAnalysis: function() {
+    // this._clearAnalysis();
+    // this._setupDrawingManager();
+    this.model.set("active", true);
+  },
+
+  stopAnalysis: function() {
+    this.model.set("active", false);
+  },
+
+  _toggleAnalysis: function() {
+    if(this.model.get("active")) {
+      this.button.enable();
+    } else {
+      this.button.disable();
+    }
   },
 
   render: function() {
-    var that = this;
-
-    var buttonModel = new gbif.ui.model.AnalysisButton();
-
     this.button = new gbif.ui.view.AnalysisButton({
-      model: buttonModel
+      model: this.model
     });
 
     $("body").append(this.button.render());

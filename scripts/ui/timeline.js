@@ -8,28 +8,9 @@ gbif.ui.view.TimelineButton = Backbone.View.extend({
   initialize: function() {
     var template = $("#timeline_control-template").html();
 
-    _.bindAll(this, "_onChangeCollapsed");
-
-    //bindings
-    this.model.bind("change:collapsed", this._onChangeCollapsed);
-
     this.template = new gbif.core.Template({
       template: template
     });
-  },
-
-  _onChangeCollapsed: function(isCollapsed) {
-    if(this.model.get("collapsed")) {
-      $(this.$el).animate({
-        'top': '20px',
-        'left': '20px'
-      }, 150);
-    } else {
-      $(this.$el).animate({
-        'top': '40px',
-        'left': '40px',
-      }, 150);
-    }
   },
 
   _onClickButton: function(e) {
@@ -114,12 +95,32 @@ gbif.ui.view.Timeline = gbif.ui.view.Widget.extend({
         'left': '20px',
         'height': '44px'
       }, 150).addClass("collapsed");
+
+      $(this.$timeline_control).animate({
+        'top': '20px',
+        'left': '20px'
+      }, 150);
+
+      $(this.$analysis_control).animate({
+        'top': '20px',
+        'right': '20px'
+      }, 150);
     } else {
       $(this.$el).animate({
         'bottom': '40px',
         'left': '40px',
         'height': '150px'
       }, 150).removeClass("collapsed");
+
+      $(this.$timeline_control).animate({
+        'top': '40px',
+        'left': '40px',
+      }, 150);
+
+      $(this.$analysis_control).animate({
+        'top': '40px',
+        'right': '40px',
+      }, 150);
     }
   },
 
@@ -306,6 +307,9 @@ gbif.ui.view.Timeline = gbif.ui.view.Widget.extend({
     this.$months       = this.$el.find(".visible_months");
     this.$trail        = this.$el.find(".trail");
     this.$range        = this.$el.find(".range");
+
+    this.$analysis_control = $(".analysis_control");
+    this.$timeline_control = $(this.button.$el);
 
     this.options.container.append(this.$el);
 

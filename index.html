@@ -20,9 +20,12 @@
   <meta property="og:image" content=""/>
 
   <link rel="stylesheet" href="styles/vendor/cartodb.css" />
+  <link rel="stylesheet" href="styles/vendor/leaflet.css" />
   <!--[if lte IE 8]>
     <link rel="stylesheet" href="styles/vendor/cartodb.ie.css" />
+    <link rel="stylesheet" href="styles/vendor/leaflet.ie.css" />
   <![endif]-->
+  <link rel="stylesheet" href="http://leaflet.github.io/Leaflet.draw/leaflet.draw.css" />
   <link rel="stylesheet" href="styles/main.css">
 
   <script src="scripts/vendor/modernizr.custom.82536.js"></script>
@@ -45,7 +48,8 @@
   <script src="scripts/vendor/backbone-min.js"></script>
   <script src="scripts/vendor/d3.min.js"></script>
 
-  <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false&libraries=drawing"></script>
+  <script src="scripts/vendor/leaflet.js"></script>
+  <script src="scripts/vendor/leaflet.draw.js"></script>
   <script src="scripts/vendor/cartodb.js"></script>
   <script src="scripts/vendor/torque.uncompressed.js"></script>
 
@@ -70,7 +74,8 @@
 
   <!-- controls -->
   <script id="analysis_control-template" type="text/x-underscore-template">
-    <a href="#analysis" id="analysis_control" class="button analysis"><i></i><%= text %></a>
+    <div class="analysis_explanation"><p>Close the polygon by clicking on the first vertex to submit it</p></div>
+    <a href="#analysis" id="analysis_control" class="button analysis"><i></i><span><%= buttontext %></span></a>
   </script>
 
   <script id="timeline_control-template" type="text/x-underscore-template">
