@@ -7,6 +7,13 @@ timeline          = {},
 torqueLayer       = {},
 current_cat       = "sp";
 
+function test_get_aggregated() {
+  torqueLayer.provider.getTile({ x: 0, y: 0 }, 0, function(data) {
+    var keys = torqueLayer.provider.aggregateByKey(data.rows);
+    console.log(keys);
+  });
+}
+
 function loadGBIF(callback) {
   if(loaded) {
     callback && callback();
@@ -43,6 +50,7 @@ function loadGBIF(callback) {
   });
 
   torqueLayer.addTo(map);
+  test_get_aggregated();
 
   // Analysis
   analysis = new gbif.ui.view.Analysis({ map: map });
