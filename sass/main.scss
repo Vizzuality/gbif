@@ -7,6 +7,8 @@ body,
 #map {
   height: 100%;
   width: 100%;
+  min-height: 450px;
+  min-width: 600px;
   margin: 0;
   padding: 0;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -326,4 +328,100 @@ strong { font-weight: bold; }
   .bar {
     fill: #85C1F9;
   }
+}
+
+
+/*
+ * ANALYSIS
+ */
+
+.leaflet-draw-tooltip { display: none; }
+
+.leaflet-div-icon {
+  margin-left: -6px !important;
+  margin-top: -6px !important;
+  border: 2px solid #DA6D64;
+  @include border-radius(6px);
+}
+
+.analysis_subscribe {
+  display: none;
+  position: absolute;
+  z-index: 600;
+  top: 150px; left: 50%;
+  margin-left: -219px;
+  width: 438px;
+  min-height: 300px;
+  padding: 20px;
+  border: 1px solid #000;
+  @include border-radius(5px);
+  background: #fff;
+
+  .title {
+    font-weight: bold;
+    font-size: 17px;
+    margin-bottom: 15px;
+    color: #333;
+  }
+
+  .textarea {
+    width: 428px;
+    height: 202px;
+    padding: 5px;
+    margin-bottom: 17px;
+    border: 1px solid #ddd;
+    @include border-radius(5px);
+    font: 14px "Helvetica Neue", Helvetica, Arial, sans-serif;
+    color: #333;
+    outline: none;
+  }
+
+  .cancel {
+    display: inline-block;
+    line-height: 35px;
+    color: #FF2626;
+    text-decoration: none;
+    font-size: 14px;
+  }
+
+  .send {
+    display: block;
+    position: relative;
+    float: right;
+    padding: 0 15px;
+    line-height: 35px;
+    @include background(linear-gradient(#00B1EC, #09c));
+    @include border-radius(3px);
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 14px;
+    @include text-shadow(0 -1px 0 #0079A2);
+    @include box-shadow(
+      0 3px 0 #0086B3,
+      0 -2px 0 -1px rgba(#fff, .15) inset
+    );
+
+    &:hover {
+      @include background(linear-gradient(#00B1EC, darken(#09c, 2%)));
+    }
+
+    &:active {
+      top: 3px;
+      @include box-shadow(rgba(#000,.35) 0 1px 2px 0 inset);
+    }
+  }
+}
+
+.backdrop {
+  display: none;
+  position: absolute;
+  z-index: 500;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  overflow: hidden;
+  background: #000;
+  @include opacity(.85);
 }

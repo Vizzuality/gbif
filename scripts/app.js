@@ -1,16 +1,18 @@
-var loaded = false,
-    map = null;
+var loaded        = false,
+    map           = {}
+    GOD           = {},
+    analysis      = {},
+    timeline      = {},
+    torqueLayer   = {},
+    drawnItems    = {},
+    current_cat   = "sp",
+    aggr_data     = null;
 
-GOD               = {},
-analysis          = {},
-timeline          = {},
-torqueLayer       = {},
-current_cat       = "sp";
-
-function test_get_aggregated() {
+function get_aggregated(callback) {
   torqueLayer.provider.getTile({ x: 0, y: 0 }, 0, function(data) {
-    var keys = torqueLayer.provider.aggregateByKey(data.rows);
-    console.log(keys);
+    aggr_data = torqueLayer.provider.aggregateByKey(data.rows);
+
+    callback();
   });
 }
 
@@ -26,7 +28,7 @@ function loadGBIF(callback) {
   window.GOD = GOD;
 
   map = new L.Map('map', {
-    zoomControl: true,
+    zoomControl: false,
     center: [36.60670888641815, 38.627929687],
     zoom: 6
   });
@@ -50,58 +52,17 @@ function loadGBIF(callback) {
   });
 
   torqueLayer.addTo(map);
-  test_get_aggregated();
+  torqueLayer.setKey([2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]);
+
+  get_aggregated(function() {
+    timeline = new gbif.ui.view.Timeline({
+      container: $("body")
+    });
+  });
 
   // Analysis
   analysis = new gbif.ui.view.Analysis({ map: map });
   $("body").append(analysis.render());
-
-  // Timeline
-  timeline = new gbif.ui.view.Timeline({
-    container: $("body")
-  });
-
-    var drawnItems = new L.FeatureGroup();
-    map.addLayer(drawnItems);
-
-    var drawControl = new L.Control.Draw({
-      draw: {
-        position: 'topleft',
-        polygon: {
-          title: 'Draw a sexy polygon!',
-          allowIntersection: false,
-          drawError: {
-            color: '#b00b00',
-            timeout: 1000
-          },
-          shapeOptions: {
-            color: '#bada55'
-          },
-          showArea: true
-        },
-        circle: {
-          shapeOptions: {
-            color: '#662d91'
-          }
-        }
-      },
-      edit: {
-        featureGroup: drawnItems
-      }
-    });
-    map.addControl(drawControl);
-
-    map.on('draw:created', function (e) {
-      var type = e.layerType,
-        layer = e.layer;
-
-      if (type === 'marker') {
-        layer.bindPopup('A popup!');
-      }
-
-      drawnItems.addLayer(layer);
-    });
-
 }
 
 $(function() {

@@ -32,6 +32,7 @@
 </head>
 <body>
   <div id="map"></div>
+  <div class="backdrop"></div>
 
   <!-- TODO: Google Analytics -->
   <!-- script>
@@ -50,7 +51,7 @@
   <script src="scripts/vendor/carto.js"></script>
 
   <script src="scripts/vendor/leaflet.js"></script>
-  <script src="scripts/vendor/leaflet.draw.js"></script>
+  <script src="scripts/vendor/leaflet-custom.js"></script>
   <script src="scripts/vendor/cartodb.js"></script>
   <script src="scripts/vendor/torque.uncompressed.js"></script>
 
@@ -76,7 +77,7 @@
   <!-- controls -->
   <script id="analysis_control-template" type="text/x-underscore-template">
     <div class="analysis_explanation"><p>Close the polygon by clicking on the first vertex to submit it</p></div>
-    <a href="#analysis" id="analysis_control" class="button analysis"><i></i><span><%= buttontext %></span></a>
+    <a href="#analysis" id="analysis_control" class="button analysis"><i></i><span>Report an error</span></a>
   </script>
 
   <script id="timeline_control-template" type="text/x-underscore-template">
@@ -127,6 +128,19 @@
         <div class="visible_years"></div>
       </div>
     </div>
+  </script>
+
+  <!-- analysis_subscribe -->
+  <script id="analysis_subscribe-template" type="text/x-underscore-template">
+    <form action="/analysis" method="post">
+      <input id="area_latlngs" name="area[latlngs]" type="hidden">
+      <h1 class="title">Submit your comment</h1>
+      <textarea rows="4" class="textarea"></textarea>
+      <a href="#cancel" class="cancel">Cancel</a>
+      <a href="#send" class="send">
+        <span>Submit my comments</span>
+      </a>
+    </form>
   </script>
 </body>
 </html>

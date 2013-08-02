@@ -181,7 +181,7 @@ gbif.ui.view.Timeline = gbif.ui.view.Widget.extend({
     this._adjustHandlePosition();
 
     svg.selectAll(".bar")
-      .data(_data)
+      .data(this.data)
       .style("fill", function(d) {
         var x = $(this).attr("x");
 
@@ -252,38 +252,49 @@ gbif.ui.view.Timeline = gbif.ui.view.Widget.extend({
   },
 
   _drawGraph: function() {
+    var self = this;
+
+    this.data = [];
+    this.nums = [];
+
+    for(var i = 0; i < this.years.length; i++) {
+      item = {};
+
+      item['year'] = this.years[i][1];
+      item['num'] = aggr_data[cat_keys[current_cat][this.years[i][1]]];
+      this.nums[i] = item['num'];
+
+      this.data.push(item);
+    }
+
     var x_extent = [1900, 2020],
         x_scale = d3.scale.linear()
                     .range([0,config.GRAPH_W])
                     .domain(x_extent);
 
-    var y_extent = [0, 100],
+    var y_extent = [d3.min(this.nums), d3.max(this.nums)],
         y_scale = d3.scale.linear()
                     .range([config.GRAPH_H, config.GRAPH_MARGIN])
                     .domain(y_extent);
 
-    d3.json(config.CARTODB_URL+'?q=SELECT years, num FROM untitled_table', function(data) {
-      _data = data.rows;
+    svg = d3.select(".legend")
+      .append("svg")
+      .attr("width", config.GRAPH_W)
+      .attr("height", config.GRAPH_H+2*config.GRAPH_MARGIN);
 
-      svg = d3.select(".legend")
-        .append("svg")
-        .attr("width", config.GRAPH_W)
-        .attr("height", config.GRAPH_H+2*config.GRAPH_MARGIN);
-
-      svg.selectAll("rect")
-        .data(_data)
-        .enter()
-        .append("rect")
-        .attr("width", 42)
-        .attr("height", 4)
-        .attr("class", "bar")
-        .attr("x", function(d) {
-          return x_scale(d['years'])
-        })
-        .attr("y", function(d) {
-          return y_scale(d['num'])
-        });
-    });
+    svg.selectAll("rect")
+      .data(this.data)
+      .enter()
+      .append("rect")
+      .attr("width", 42)
+      .attr("height", 4)
+      .attr("class", "bar")
+      .attr("x", function(d) {
+        return x_scale(d['year'])
+      })
+      .attr("y", function(d) {
+        return y_scale(d['num'])
+      });
   },
 
   _init: function() {

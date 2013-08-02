@@ -14,46 +14,46 @@ gbif.ui.view.AnalysisButton = Backbone.View.extend({
   },
 
   enable: function() {
-    this.model.set("active", true);
-    this.model.set("buttontext", "Cancel");
+    var self = this;
+
+    this.$el.find("i").addClass("active");
+    this.$el.find(".analysis span").text("Cancel");
+
+    setTimeout(function() {
+      self.$el.find(".analysis").animate({
+        'width': 50
+      }, 150);
+
+      self.$el.find(".analysis_explanation p").animate({
+        'margin-right': 67
+      }, 150);
+    }, 150);
   },
 
   disable: function() {
-    this.model.set("active", false);
-    this.model.set("buttontext", "Report an error");
+    var self = this;
+
+    this.$el.find(".analysis").animate({
+      'width': 100
+    }, 150);
+
+    this.$el.find(".analysis_explanation p").animate({
+      'margin-right': -256
+    }, 150, function() {
+      setTimeout(function() {
+        self.$el.find("i").removeClass("active");
+        self.$el.find(".analysis span").text("Report an error");
+      }, 150);
+    });
   },
 
-  _onClickButton: function() {
-    var self = this;
+  _onClickButton: function(e) {
+    e.preventDefault();
 
     if(!this.model.get("active")) {
       analysis.startAnalysis();
-
-      this.$el.find("i").addClass("active");
-      this.$el.find(".analysis span").text(this.model.get("buttontext"));
-
-      setTimeout(function() {
-        self.$el.find(".analysis").animate({
-          'width': 50
-        }, 150);
-
-        self.$el.find(".analysis_explanation p").animate({
-          'margin-right': 67
-        }, 150);
-      }, 150);
     } else {
       analysis.stopAnalysis();
-
-      this.$el.find(".analysis").animate({
-        'width': 100
-      }, 150, function() {
-        self.$el.find(".analysis_explanation p").animate({
-          'margin-right': -256
-        }, 150, function() {
-          self.$el.find("i").removeClass("active");
-          self.$el.find(".analysis span").text(self.model.get("buttontext"));
-        });
-      });
     }
   },
 
@@ -69,8 +69,7 @@ gbif.ui.view.AnalysisButton = Backbone.View.extend({
 
 gbif.ui.model.Analysis = Backbone.Model.extend({
   defaults: {
-    active: false,
-    buttontext: "Report an error"
+    active: false
   }
 });
 
@@ -78,38 +77,24 @@ gbif.ui.view.Analysis = gbif.core.View.extend({
   initialize: function() {
     this.model = new gbif.ui.model.Analysis();
 
-    _.bindAll(this, "_toggleAnalysis");
+    _.bindAll(this, "_toggleAnalysis", "_onOverlayComplete");
 
     // bindings
     this.model.bind("change:active", this._toggleAnalysis);
 
     this.map = this.options.map;
-    this.analyzing = false;
-    this.selectedShapes = [];
-    this.selectedShape;
-  },
-
-  _clearAnalysis: function() {
-    this._clearSelection();
-    this._deleteSelectedShape();
-
-    if (this.drawingManager) {
-      this.drawingManager.setDrawingMode(null);
-      this.drawingManager.setOptions({ drawingControl: false });
-      this.drawingManager.path = null;
-    }
-
-    this.button.disableButton();
   },
 
   startAnalysis: function() {
-    // this._clearAnalysis();
-    // this._setupDrawingManager();
     this.model.set("active", true);
+
+    this._setupAnalysis();
   },
 
   stopAnalysis: function() {
     this.model.set("active", false);
+
+    this._clearAnalysis();
   },
 
   _toggleAnalysis: function() {
@@ -120,144 +105,133 @@ gbif.ui.view.Analysis = gbif.core.View.extend({
     }
   },
 
+  _setupAnalysis: function() {
+    this.drawnItems = new L.FeatureGroup();
+    this.map.addLayer(this.drawnItems);
+
+    this.map.on('draw:created', this._onOverlayComplete);
+    this.drawingManager = new L.Draw.Polygon(map, config.ANALYSIS_OVERLAY_STYLE);
+    this.drawingManager.enable();
+  },
+
+  _clearAnalysis: function() {
+    this.map.removeLayer(this.drawnItems);
+    this.drawnItems = null;
+
+    this.map.off('draw:created');
+
+    this.drawingManager.disable();
+    this.drawingManager = null;
+  },
+
+  _onOverlayComplete: function(e) {
+    this.drawnItems.addLayer(e.layer);
+
+    this.selectedShape = {
+      "type": e.layerType,
+      "coordinates": e.layer._latlngs
+    };
+
+    this.dialog.show();
+  },
+
   render: function() {
     this.button = new gbif.ui.view.AnalysisButton({
       model: this.model
     });
 
+    this.dialog = new gbif.ui.view.AnalysisSubscribe();
+
     $("body").append(this.button.render());
+
+    $("body").append(this.dialog.render());
 
     return this.$el;
   }
+});
 
-  // _setupDrawingManager: function() {
-  //   var self = this;
 
-  //   var options = {
-  //     drawingModes: [ google.maps.drawing.OverlayType.POLYGON ],
-  //     drawingControl: false,
-  //     markerOptions: {
-  //       draggable: false,
-  //       icon: new google.maps.MarkerImage(
-  //         '/assets/icons/marker_exclamation.png',
-  //         new google.maps.Size(45, 45), // desired size
-  //         new google.maps.Point(0, 0),  // offset within the scaled sprite
-  //         new google.maps.Point(20, 20) // anchor point is half of the desired size
-  //       )
-  //     },
+gbif.ui.view.AnalysisSubscribe = Backbone.View.extend({
+  className: 'analysis_subscribe',
 
-  //     drawingControlOptions: {
-  //       position: google.maps.ControlPosition.RIGHT_TOP,
-  //       drawingModes: [google.maps.drawing.OverlayType.POLYGON, google.maps.drawing.OverlayType.MARKER]
-  //     },
+  events: {
+    "keyup textarea": "_onKeyPress",
+    "click .send":    "_send",
+    'click .cancel':   "hide"
+  },
 
-  //     polygonOptions: config.ANALYSIS_OVERLAYS_STYLE,
-  //     panControl: false,
-  //     map: self.map
-  //   };
+  initialize: function() {
+    _.bindAll(this, "_onKeyUp");
 
-  //   // Create the drawing manager
-  //   this.drawingManager = new google.maps.drawing.DrawingManager(options);
+    this.$backdrop = $(".backdrop");
 
-  //   // Start drawing right away
-  //   this.drawingManager.setDrawingMode(google.maps.drawing.OverlayType.POLYGON);
+    var template = $("#analysis_subscribe-template").html();
 
-  //   // Event binding
-  //   google.maps.event.addListener(this.drawingManager, 'overlaycomplete', this._onOverlayComplete);
-  // },
+    this.template = new gbif.core.Template({
+      template: template
+    });
+  },
 
-  // _onOverlayComplete: function(e) {
-  //   this.drawingManager.setDrawingMode(null);
-  //   this.drawingManager.path = e.overlay.getPath().getArray();
-  //   this.drawingManager.setOptions({ drawingControl: false });
-  //   this._enableDoneButton();
+  show: function() {
+    this.$backdrop.fadeIn(250);
+    this.$el.fadeIn(250);
 
-  //   var newShape = e.overlay;
-  //   newShape.type = e.type;
+    $(document).on("keyup", this._onKeyUp);
+  },
 
-  //   this._setSelection(newShape);
+  hide: function() {
+    this.$el.fadeOut(250);
+    this.$backdrop.fadeOut(250);
 
-  //   polygon = {
-  //     "type": "MultiPolygon",
-  //     "coordinates": [
-  //       [
-  //         $.map(this.drawingManager.path, function(latlong, index) {
-  //           return [[latlong.lng(), latlong.lat()]];
-  //         })
-  //       ]
-  //     ]
-  //   };
+    analysis.stopAnalysis();
 
-  //   var area = this._calcArea(polygon);
+    $(document).off("keyup");
+  },
 
-  //   analysis.info.model.set("ha", area);
-  // },
+  _onKeyUp: function(e) {
+    if (e.which == 27) this._onEscKey(e);
+  },
 
-  // _clearSelection: function() {
+  _onEscKey: function(e) {
+    e.preventDefault();
 
-  //   if (this.selectedShapes.length > 0) {
+    this.hide();
+  },
 
-  //     for (var i in this.selectedShapes) {
-  //       if (this.selectedShapes[i]) {
-  //         this.selectedShapes[i].setEditable(true);
-  //         this.selectedShapes[i].setMap(null);
-  //       }
-  //     }
+  _onKeyPress: function(e) {
+    e.preventDefault();
+    e.stopPropagation();
 
-  //     this.selectedShapes = [];
-  //     if (this.drawingManager && this.drawingManager.path) this.drawingManager.path = null;
-  //   }
-  // },
+    if (e.keyCode == 13) {
+      this._send(e);
+    }
+  },
 
-  // _deleteSelectedShape: function() {
-  //   if (this.selectedShape) {
-  //     this.selectedShape.setMap(null);
-  //     this.selectedShape = null;
-  //   }
-  // },
+  _send: function(e) {
+    var self = this;
 
-  // _setSelection: function(shape) {
-  //   this._clearSelection();
-  //   this.selectedShape = shape;
-  // },
+    e.preventDefault();
+    e.stopPropagation();
 
-  // _onClickCancel: function(e) {
-  //   e.preventDefault();
+    $.ajax({
+      type: this.$form.attr('method'),
+      url: this.$form.attr('action'),
+      data: this.$form.serialize()
+    }).done(function() {
+      // success
 
-  //   analysis.analyzing = false;
-  //   this._clearAnalysis();
-  //   this._hideHelper();
-  // },
+      self.hide();
+    }).fail(function() {
+      // error
+      alert(JSON.stringify(analysis.selectedShape));
+    });
+  },
 
-  // // Done button
-  // _toggleDoneButton: function() {
-  //   if (this.model.get("toggleDoneButton")) {
-  //     this.$doneButton.removeClass("disabled");
-  //   } else {
-  //     this.$doneButton.addClass("disabled");
-  //   }
-  // },
+  render: function() {
+    this.$el.append(this.template.render());
 
-  // _enableDoneButton: function() {
-  //   this.model.set("toggleDoneButton", true);
-  // },
+    this.$form = this.$el.find("form");
 
-  // _disableDoneButton: function() {
-  //   this.model.set("toggleDoneButton", false);
-  // },
-
-  // _onClickDone: function(e) {
-  //   e.preventDefault();
-
-  //   this._done();
-  // },
-
-  // _done: function() {
-  //   analysis.analyzing = false;
-  //   this.button._disableButton();
-  //   this._hideHelper();
-  //   this.info.show();
-
-  //   if (this.selectedShape) this.selectedShape.setEditable(false);
-  // },
+    return this.$el;
+  }
 });
