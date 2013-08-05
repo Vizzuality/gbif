@@ -111,7 +111,7 @@ strong { font-weight: bold; }
   position: absolute;
   z-index: 10;
   left: 40px; bottom: 40px;
-  width: 644px;
+  width: 592px;
   height: 150px;
   border:1px solid #000;
   background: #fff;
@@ -156,36 +156,12 @@ strong { font-weight: bold; }
   }
 }
 
-.play {
-  display: inline-block;
-  position: absolute;
-  top: 12px; left: 14px;
-  height: 20px;
-  width: 20px;
-  @include box-shadow(0 0 0 1px #359FFB);
-  @include background(linear-gradient(#fff, #eee));
-  background: image-url('play.png') no-repeat center;
-  @include border-radius(13px);
-  vertical-align: middle;
-
-  &:hover,
-  &:active {
-    margin-left: -1px;
-    top: 11px;
-    height: 22px;
-    width: 22px;
-    @include box-shadow(0 0 0 1px #333);
-  }
-
-  &.played { background-image: image-url('play-stopped.png'); }
-}
-
 .slider {
   float: left;
   position: absolute;
   bottom: 0; left: 48px;
   height: 44px;
-  width: 596px;
+  width: 544px;
   border-top: 1px solid #e5e5e5;
   background: #fff;
   @include border-bottom-right-radius(5px);
@@ -309,10 +285,10 @@ strong { font-weight: bold; }
 .legend {
   position: absolute;
   top: 0; left: 48px;
-  width: 596px;
+  width: 544px;
 
-  .title {
-    padding-left: 15px;
+  h1 {
+    padding: 0 20px;
     height: 44px;
     border-bottom: 1px solid #e5e5e5;
     font-size: 14px;
@@ -327,6 +303,72 @@ strong { font-weight: bold; }
 
   .bar {
     fill: #85C1F9;
+  }
+}
+
+.timeline_tooltip {
+  display: none;
+  position: absolute;
+  background: #fff;
+  padding: 0 15px;
+  border: 1px solid #000;
+  @include border-radius(5px);
+
+  li {
+    border-bottom: 1px solid #e5e5e5;
+
+    &:last-child { border-bottom: 0; }
+  }
+}
+
+.timeline_tooltip_link {
+  text-decoration: none;
+  display: block;
+  font-size: 14px;
+  line-height: 40px;
+  color: #349FFA;
+
+  i {
+    display: inline-block;
+    margin-right: 5px;
+    height: 9px;
+    width: 9px;
+    line-height: 40px;
+    background: image-url('menu.png');
+  }
+
+  &.selected,
+  &:hover {
+    color: #666;
+
+    i {
+      background: image-url('menu-selected.png');
+    }
+  }
+}
+
+.tip {
+  position: absolute;
+  bottom: -5px;
+  left: 24px;
+  width: 0;
+  height: 0;
+  margin: 0 0 0 -5px;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid #000;
+
+  &:after {
+    content: "";
+    position: absolute;
+    bottom: 1px;
+    left: 0;
+    width: 0;
+    height: 0;
+    margin: 0 0 0 -5px;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid #fff;
   }
 }
 

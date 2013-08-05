@@ -63,13 +63,9 @@
   <script src="scripts/core/view.js"></script>
   <script src="scripts/core/god.js"></script>
 
-  <script src="scripts/ui/widget.js"></script>
   <script src="scripts/ui/analysis.js"></script>
-  <script src="scripts/ui/dialog.js"></script>
-  <script src="scripts/ui/tiles_loader.js"></script>
+  <script src="scripts/ui/timeline_tooltip.js"></script>
   <script src="scripts/ui/timeline.js"></script>
-  <script src="scripts/ui/wall.js"></script>
-  <script src="scripts/ui/window.js"></script>
 
   <script src="scripts/helpers.js"></script>
   <script src="scripts/app.js"></script>
@@ -91,11 +87,11 @@
     </div>
 
     <div class="legend">
-      <h1 class="title"><strong>Puma concolor</strong> - Showing data from 1900 to 1950 from a total of 451,331 records</h1>
+      <h1><strong class="title"><%= current_title %></strong> - <span class="desc">Showing data from <span class="right_year">1900</span> to <span class="leaf_year">2020</span> (<span class="records">0</span> records)</span></h1>
     </div>
 
     <div class="slider">
-      <a class="play" href="#"></a>
+      <!-- a class="play" href="#"></a -->
 
       <div class="time">
         <div class="player"><div class="tipsy"><span>&nbsp;</span><div class="arrow"></div></div></div>
@@ -128,6 +124,18 @@
         <div class="visible_years"></div>
       </div>
     </div>
+  </script>
+
+  <!-- timeline_tooltip -->
+  <script id="timeline_tooltip-template" type="text/x-underscore-template">
+    <ul></ul>
+
+    <span class="tip"></span>
+  </script>
+
+  <!-- timeline_tooltip_cat -->
+  <script id="timeline_tooltip_cat-template" type="text/x-underscore-template">
+    <li><a href="#<%= key %>" data-title="<%= title %>" data-key="<%= key %>" class="timeline_tooltip_link <%= selected ? 'selected' : '' %>"><i></i><%= title %></a></li>
   </script>
 
   <!-- analysis_subscribe -->

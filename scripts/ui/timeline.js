@@ -29,28 +29,33 @@ gbif.ui.model.Timeline = Backbone.Model.extend({
   defaults: {
     collapsed: false,
     playing: false,
-    startYear: 2006,
-    endYear:   2014,
-    animationSpeed: 200,
+    current_cat: "sp",
+    current_title: "Preserved Specimens",
+    left_year: 1900,
+    right_year: 2020,
+    records: 0,
+    animationSpeed: 150,
     animationDelay: 100
   }
 });
 
-gbif.ui.view.Timeline = gbif.ui.view.Widget.extend({
+gbif.ui.view.Timeline = Backbone.View.extend({
   className: "timeline",
 
   events: {
-    "click .action":  "_onClickAction",
-    "click .year":    "_onClickYear"
+    "click .action":      "_onClickAction",
+    "click .year":        "_onClickYear",
+    "click .hamburger a": "_onClickHamburger"
   },
 
   initialize: function() {
-    _.bindAll(this, "_onStartDrag", "_onDrag", "_onStopDrag", "_onChangeCollapsed", "_onHandleAdjusted");
+    _.bindAll(this, "_onStartDrag", "_onDrag", "_onStopDrag", "_onChangeCollapsed", "_onChangeCurrentCat", "_onHandleAdjusted");
 
     this.model = new gbif.ui.model.Timeline();
 
     // bindings
     this.model.bind("change:collapsed", this._onChangeCollapsed);
+    this.model.bind("change:current_cat", this._onChangeCurrentCat);    
 
     // defaults
     this.grid_x = 42;
@@ -67,7 +72,10 @@ gbif.ui.view.Timeline = gbif.ui.view.Widget.extend({
       model: this.model
     });
 
+    this.timeline_tooltip = new gbif.ui.view.TimelineTooltip();
+
     $("body").append(this.button.render());
+    $("body").append(this.timeline_tooltip.render());
 
     this._init();
   },
@@ -135,7 +143,7 @@ gbif.ui.view.Timeline = gbif.ui.view.Widget.extend({
       this._stopAnimation();
       this.model.set("playing", false);
 
-      return;
+      return false;
     }
   },
 
@@ -160,7 +168,7 @@ gbif.ui.view.Timeline = gbif.ui.view.Widget.extend({
     if ( this.current_drag_side === 'left' && current_handle_pos > this.model.get("right_handle") - this.grid_x) {
       this.fixPosition = "left";
       return false;
-    } else if ( this.current_drag_side == 'right' && current_handle_pos < this.model.get("left_handle") + this.grid_x) {
+    } else if ( this.current_drag_side === 'right' && current_handle_pos < this.model.get("left_handle") + this.grid_x) {
       this.fixPosition = "right";
       return false;
     }
@@ -179,18 +187,6 @@ gbif.ui.view.Timeline = gbif.ui.view.Widget.extend({
     }
 
     this._adjustHandlePosition();
-
-    svg.selectAll(".bar")
-      .data(this.data)
-      .style("fill", function(d) {
-        var x = $(this).attr("x");
-
-        if(x >= self.model.get("left_handle") && x < self.model.get("right_handle")) {
-          return "#85C1F9";
-        } else {
-          return "#e5e5e5";
-        }
-      });
   },
 
   _adjustHandlePosition: function() {
@@ -203,12 +199,34 @@ gbif.ui.view.Timeline = gbif.ui.view.Widget.extend({
     }
   },
 
+  _adjustBothHandles: function() {
+    this.$left_handle.animate({ left: this.model.get("left_handle") }, 150);
+    this.$right_handle.animate({ left: this.model.get("right_handle") }, 150);
+
+    this._onHandleAdjusted();
+  },
+
   _onHandleAdjusted: function() {
+    var self = this;
+
+    svg.selectAll(".bar")
+      .data(this.data)
+      .style("fill", function(d) {
+        var x = $(this).attr("x");
+
+        if(x >= self.model.get("left_handle") && x < self.model.get("right_handle")) {
+          return "#85C1F9";
+        } else {
+          return "#e5e5e5";
+        }
+      });
+
     var l = this.$left_handle.position().left;
     var r = this.$right_handle.position().left;
 
     var cat_array = [],
-        key_array = [];
+        key_array = [],
+        nums_array = 0;
 
     this.$range.find("div").css({ left: this.model.get("left_handle"), width: this.model.get("right_handle") - this.model.get("left_handle") });
 
@@ -216,13 +234,37 @@ gbif.ui.view.Timeline = gbif.ui.view.Widget.extend({
       if(l <= y[0] && r > y[0]) {
         cat_array.push(y[1]);
       }
+
+      if(l === y[0]) {
+        self.model.set("left_year", y[1]);
+      } else if(r === y[0]) {
+        self.model.set("right_year", y[1]);
+      } else if(r === 504) {
+        self.model.set("right_year", 2020); // hardcode last year :(
+      }
     });
 
     for(var i = 0; i < cat_array.length; i++) {
-      key_array.push(cat_keys[current_cat][cat_array[i]]);
+      var key = cats[this.model.get("current_cat")]['years'][cat_array[i]];
+
+      key_array.push(key);
+
+      nums_array = nums_array + aggr_data[key];
     }
 
+    this.model.set("records", nums_array);
+
+    this._updateLegendDesc();
+
     torqueLayer.setKey(key_array);
+  },
+
+  _updateLegendTitle: function() {
+    $(this.$legend_title).text(this.model.get("current_title"));
+  },
+
+  _updateLegendDesc: function() {
+    $(this.$legend_desc).text("Showing data from " + this.model.get("left_year") + " to " + this.model.get("right_year") + " (" + this.model.get("records") + " records)");
   },
 
   _enableDrag: function() {
@@ -245,7 +287,6 @@ gbif.ui.view.Timeline = gbif.ui.view.Widget.extend({
     var year = 0;
 
     _.each(this.$years.find(".year a"), function(y, i) {
-      // Store year positions
       year = parseInt($(y).attr("data-year"), 10);
       self.years[i] = [$(y).position().left, year];
     });
@@ -261,7 +302,7 @@ gbif.ui.view.Timeline = gbif.ui.view.Widget.extend({
       item = {};
 
       item['year'] = this.years[i][1];
-      item['num'] = aggr_data[cat_keys[current_cat][this.years[i][1]]];
+      item['num'] = aggr_data[cats[this.model.get("current_cat")]['years'][this.years[i][1]]];
       this.nums[i] = item['num'];
 
       this.data.push(item);
@@ -297,6 +338,42 @@ gbif.ui.view.Timeline = gbif.ui.view.Widget.extend({
       });
   },
 
+  _updateGraph: function() {
+    var self = this;
+
+    this.data = [];
+    this.nums = [];
+
+    for(var i = 0; i < this.years.length; i++) {
+      item = {};
+
+      item['year'] = this.years[i][1];
+      item['num'] = aggr_data[cats[this.model.get("current_cat")]['years'][this.years[i][1]]];
+      this.nums[i] = item['num'];
+
+      this.data.push(item);
+    }
+
+    var x_extent = [1900, 2020],
+        x_scale = d3.scale.linear()
+                    .range([0,config.GRAPH_W])
+                    .domain(x_extent);
+
+    var y_extent = [d3.min(this.nums), d3.max(this.nums)],
+        y_scale = d3.scale.linear()
+                    .range([config.GRAPH_H, config.GRAPH_MARGIN])
+                    .domain(y_extent);
+
+    svg.selectAll(".bar")
+      .data(this.data)
+      .attr("x", function(d) {
+        return x_scale(d['year'])
+      })
+      .attr("y", function(d) {
+        return y_scale(d['num'])
+      });
+  },
+
   _init: function() {
     var self = this;
 
@@ -322,10 +399,12 @@ gbif.ui.view.Timeline = gbif.ui.view.Widget.extend({
     this.$analysis_control = $(".analysis_control");
     this.$timeline_control = $(this.button.$el);
 
+    this.$legend_title = this.$el.find(".legend .title");
+    this.$legend_desc = this.$el.find(".legend .desc");
+
     this.options.container.append(this.$el);
 
     var svg = [];
-    var _data = [];
 
     this._storeDatePositions();
     this._drawGraph();
@@ -339,6 +418,32 @@ gbif.ui.view.Timeline = gbif.ui.view.Widget.extend({
     this.model.set("player", left_handle_x);
 
     setTimeout(function() { self._adjustHandlePosition(); }, 250);
+  },
+
+  _onClickHamburger: function(e) {
+    e.preventDefault();
+
+    this.timeline_tooltip.toggle();
+  },
+
+  _onChangeCurrentCat: function() {
+    var self = this;
+
+    var left_handle_x  = parseInt(_.keys(this.years)[0], 10);
+    var right_handle_x = parseInt(_.keys(this.years)[_.size(this.years)-1], 10) + 1;
+
+    this.model.set("left_handle",  left_handle_x);
+    this.model.set("right_handle", right_handle_x*42);
+
+    setTimeout(function() { self._adjustBothHandles(); }, 250);
+
+    this._updateLegendTitle();
+    this._updateGraph();
+  },
+
+  updateCat: function(key, title) {
+    this.model.set("current_title", title);
+    this.model.set("current_cat", key);
   },
 
   render: function() {

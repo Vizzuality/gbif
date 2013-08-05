@@ -5,8 +5,8 @@ var loaded        = false,
     timeline      = {},
     torqueLayer   = {},
     drawnItems    = {},
-    current_cat   = "sp",
-    aggr_data     = null;
+    aggr_data     = null,
+    total_data    = 0;
 
 function get_aggregated(callback) {
   torqueLayer.provider.getTile({ x: 0, y: 0 }, 0, function(data) {
@@ -58,6 +58,8 @@ function loadGBIF(callback) {
     timeline = new gbif.ui.view.Timeline({
       container: $("body")
     });
+
+    timeline.timeline_tooltip.addHandler(".hamburger a");
   });
 
   // Analysis
