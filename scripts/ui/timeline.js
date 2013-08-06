@@ -274,21 +274,21 @@ gbif.ui.view.Timeline = Backbone.View.extend({
     }
 
     for(var i = 0; i < cat_array.length; i++) {
-      // if(_.size(cats[this.model.get("current_cat")]['years'][cat_array[i]]) > 1) {
-      //   var _num = 0;
+      if(Array.isArray(cats[this.model.get("current_cat")]['years'][cat_array[i]])) {
+        var _num = 0;
 
-      //   for(var j = 0; j < _.size(cats[this.model.get("current_cat")]['years'][cat_array[i]]); j++) {
-      //     var key = cats[this.model.get("current_cat")]['years'][cat_array[i]][j];
+        for(var j = 0; j < cats[this.model.get("current_cat")]['years'][cat_array[i]].length; j++) {
+          var key = cats[this.model.get("current_cat")]['years'][cat_array[i]][j];
 
-      //     key_array.push(key);
+          key_array.push(key);
 
-      //     nums_array = nums_array + aggr_data[key];
-      //   }
-      // } else {
+          nums_array = nums_array + aggr_data[key];
+        }
+      } else {
         var key = cats[this.model.get("current_cat")]['years'][cat_array[i]];
 
         key_array.push(key);
-      // }
+      }
 
       nums_array = nums_array + aggr_data[key];
     }
@@ -296,7 +296,6 @@ gbif.ui.view.Timeline = Backbone.View.extend({
     this.model.set("records", nums_array);
 
     this._updateLegendDesc();
-
     torqueLayer.setKey(key_array);
   },
 
@@ -389,18 +388,18 @@ gbif.ui.view.Timeline = Backbone.View.extend({
       item = {};
 
       item['year'] = this.years[i][1];
+      debugger;
+      if(Array.isArray(cats[this.model.get("current_cat")]['years'][this.years[i][1]])) {
+        var _num = 0;
 
-      // if(_.size(cats[this.model.get("current_cat")]['years'][this.years[i][1]]) > 1) {
-      //   var _num = 0;
+        for(var j = 0; j < cats[this.model.get("current_cat")]['years'][this.years[i][1]].length; j++) {
+          _num = _num + aggr_data[cats[this.model.get("current_cat")]['years'][this.years[i][1]][j]];
+        }
 
-      //   for(var j = 0; j < _.size(cats[this.model.get("current_cat")]['years'][this.years[i][1]]); j++) {
-      //     _num = _num + aggr_data[cats[this.model.get("current_cat")]['years'][this.years[i][1]][j]];
-      //   }
-
-      //   item['num'] = _num;
-      // } else {
+        item['num'] = _num;
+      } else {
         item['num'] = aggr_data[cats[this.model.get("current_cat")]['years'][this.years[i][1]]];
-      // }
+      }
 
       this.nums[i] = item['num'];
 
