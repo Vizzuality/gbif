@@ -91,17 +91,25 @@
     </div>
 
     <div class="slider">
-      <!-- a class="play" href="#"></a -->
-
       <div class="time">
-        <div class="player"><div class="tipsy"><span>&nbsp;</span><div class="arrow"></div></div></div>
-
         <div class="trail">
-          <div class="handle left"></div>
-          <div class="handle active right"></div>
+          <div class="handle left">
+            <div class="tipsy">
+              <span></span>
+              <div class="arrow"></div>
+            </div>
+          </div>
+
+          <div class="handle right">
+            <div class="tipsy">
+              <span></span>
+              <div class="arrow"></div>
+            </div>
+          </div>
         </div>
 
         <ul class="years">
+          <li class="noyear"><a href="#"></a></li>
           <li class="year"><a href="#" data-year="1900"></a></li>
           <li class="year"><a href="#" data-year="1910"></a></li>
           <li class="year"><a href="#" data-year="1920"></a></li>
@@ -121,7 +129,9 @@
           <div class="square"></div>
         </div>
 
-        <div class="visible_years"></div>
+        <div class="visible_years">
+          <div class="noyear"></div>
+        </div>
       </div>
     </div>
   </script>

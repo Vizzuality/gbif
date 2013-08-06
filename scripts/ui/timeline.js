@@ -28,14 +28,11 @@ gbif.ui.view.TimelineButton = Backbone.View.extend({
 gbif.ui.model.Timeline = Backbone.Model.extend({
   defaults: {
     collapsed: false,
-    playing: false,
     current_cat: "sp",
     current_title: "Preserved Specimens",
     left_year: 1900,
     right_year: 2020,
-    records: 0,
-    animationSpeed: 150,
-    animationDelay: 100
+    records: 0
   }
 });
 
@@ -114,11 +111,18 @@ gbif.ui.view.Timeline = Backbone.View.extend({
         'right': '20px'
       }, 150);
     } else {
-      $(this.$el).animate({
-        'bottom': '40px',
-        'left': '40px',
-        'height': '150px'
-      }, 150).removeClass("collapsed");
+      if(typeof cats[this.model.get("current_cat")]['years'] !== 'undefined') {
+        $(this.$el).animate({
+          'bottom': '40px',
+          'left': '40px',
+          'height': '150px'
+        }, 150).removeClass("collapsed");
+      } else {
+        $(this.$el).animate({
+          'bottom': '40px',
+          'left': '40px',
+        }, 150);
+      }
 
       $(this.$timeline_control).animate({
         'top': '40px',
@@ -138,30 +142,18 @@ gbif.ui.view.Timeline = Backbone.View.extend({
     this.$current_drag = $(e.target);
     this.current_drag_side = this.$current_drag.hasClass("left") ? "left" : "right";
 
-    if (this.playing) {
-      this.$line.fadeOut(150);
-      this._stopAnimation();
-      this.model.set("playing", false);
-
-      return false;
-    }
+    if(!this.model.get("collapsed")) this.$current_drag.find(".tipsy").fadeIn(50);
   },
 
   _onDrag: function() {
     this.dragging = true;
 
-    if(this.playing) {
-      this.$line.fadeOut(150);
-      this._stopAnimation();
-      this.model.set("playing", false);
-
-      return false;
-    }
-
     this.model.set("left_handle",  this.$left_handle.position().left,  { silent: true });
     this.model.set("right_handle", this.$right_handle.position().left, { silent: true });
 
     var current_handle_pos = this.$current_drag.position().left;
+
+    this._updateDate(current_handle_pos);
 
     this.$range.find("div").css({ left: this.model.get("left_handle"), width: this.model.get("right_handle") - this.model.get("left_handle") });
 
@@ -171,6 +163,32 @@ gbif.ui.view.Timeline = Backbone.View.extend({
     } else if ( this.current_drag_side === 'right' && current_handle_pos < this.model.get("left_handle") + this.grid_x) {
       this.fixPosition = "right";
       return false;
+    }
+  },
+
+  _updateDate: function(x, current) {
+    var date = 1900;
+
+    if(x === 0) { // hardcode first year :(
+      date = "PRE";
+    } else if(x === 546) { // hardcode last year :(
+      date = 2020;
+    } else {
+      _.find(this.years, function(y) {
+        if(x >= y[0]) {
+          date = y[1];
+          return;
+        }
+      });
+    }
+
+    if(current && current === "left") {
+      this.$left_handle && this.$left_handle.find(".tipsy span").html(date);
+    } else if(current && current === "right") {
+      this.$right_handle && this.$right_handle.find(".tipsy span").html(date);
+    } else {
+      this.$current_drag && this.$current_drag.find(".tipsy span").html(date);
+      if(!this.model.get("collapsed")) this.$current_drag.find(".tipsy").show();
     }
   },
 
@@ -185,6 +203,8 @@ gbif.ui.view.Timeline = Backbone.View.extend({
 
       this.fixPosition = null;
     }
+
+    setTimeout(function(){ self.$current_drag.find(".tipsy").fadeOut(150); }, 2000)
 
     this._adjustHandlePosition();
   },
@@ -212,7 +232,7 @@ gbif.ui.view.Timeline = Backbone.View.extend({
     svg.selectAll(".bar")
       .data(this.data)
       .style("fill", function(d) {
-        var x = $(this).attr("x");
+        var x = parseInt($(this).attr("x"), 10) + 42;
 
         if(x >= self.model.get("left_handle") && x < self.model.get("right_handle")) {
           return "#85C1F9";
@@ -223,6 +243,9 @@ gbif.ui.view.Timeline = Backbone.View.extend({
 
     var l = this.$left_handle.position().left;
     var r = this.$right_handle.position().left;
+
+    this._updateDate(l, "left");
+    this._updateDate(r, "right");
 
     var cat_array = [],
         key_array = [],
@@ -235,19 +258,37 @@ gbif.ui.view.Timeline = Backbone.View.extend({
         cat_array.push(y[1]);
       }
 
-      if(l === y[0]) {
+      if(l === 0) {
+        self.model.set("left_year", "pre-1990"); // hardcode first year :(
+      } else if(l === y[0]) {
         self.model.set("left_year", y[1]);
       } else if(r === y[0]) {
         self.model.set("right_year", y[1]);
-      } else if(r === 504) {
+      } else if(r === 546) {
         self.model.set("right_year", 2020); // hardcode last year :(
       }
     });
 
-    for(var i = 0; i < cat_array.length; i++) {
-      var key = cats[this.model.get("current_cat")]['years'][cat_array[i]];
+    if(l === 0) {
+      cat_array.push("pre", "no");
+    }
 
-      key_array.push(key);
+    for(var i = 0; i < cat_array.length; i++) {
+      // if(_.size(cats[this.model.get("current_cat")]['years'][cat_array[i]]) > 1) {
+      //   var _num = 0;
+
+      //   for(var j = 0; j < _.size(cats[this.model.get("current_cat")]['years'][cat_array[i]]); j++) {
+      //     var key = cats[this.model.get("current_cat")]['years'][cat_array[i]][j];
+
+      //     key_array.push(key);
+
+      //     nums_array = nums_array + aggr_data[key];
+      //   }
+      // } else {
+        var key = cats[this.model.get("current_cat")]['years'][cat_array[i]];
+
+        key_array.push(key);
+      // }
 
       nums_array = nums_array + aggr_data[key];
     }
@@ -348,7 +389,19 @@ gbif.ui.view.Timeline = Backbone.View.extend({
       item = {};
 
       item['year'] = this.years[i][1];
-      item['num'] = aggr_data[cats[this.model.get("current_cat")]['years'][this.years[i][1]]];
+
+      // if(_.size(cats[this.model.get("current_cat")]['years'][this.years[i][1]]) > 1) {
+      //   var _num = 0;
+
+      //   for(var j = 0; j < _.size(cats[this.model.get("current_cat")]['years'][this.years[i][1]]); j++) {
+      //     _num = _num + aggr_data[cats[this.model.get("current_cat")]['years'][this.years[i][1]][j]];
+      //   }
+
+      //   item['num'] = _num;
+      // } else {
+        item['num'] = aggr_data[cats[this.model.get("current_cat")]['years'][this.years[i][1]]];
+      // }
+
       this.nums[i] = item['num'];
 
       this.data.push(item);
@@ -384,12 +437,8 @@ gbif.ui.view.Timeline = Backbone.View.extend({
     this.$left_handle  = this.$el.find(".handle.left");
     this.$right_handle = this.$el.find(".handle.right");
 
-    this.$line         = this.$el.find(".line");
-
     this.$left_tipsy   = this.$left_handle.find(".tipsy");
     this.$right_tipsy  = this.$right_handle.find(".tipsy");
-
-    this.$play         = this.$el.find(".play");
 
     this.$years        = this.$el.find(".years");
     this.$months       = this.$el.find(".visible_months");
@@ -411,11 +460,10 @@ gbif.ui.view.Timeline = Backbone.View.extend({
     this._enableDrag();
 
     var left_handle_x  = parseInt(_.keys(this.years)[0], 10);
-    var right_handle_x = parseInt(_.keys(this.years)[_.size(this.years)-1], 10) + 1;
+    var right_handle_x = parseInt(_.keys(this.years)[_.size(this.years)-1], 10) + 2;
 
-    this.model.set("left_handle",  left_handle_x);
+    this.model.set("left_handle",  left_handle_x+42);
     this.model.set("right_handle", right_handle_x*42);
-    this.model.set("player", left_handle_x);
 
     setTimeout(function() { self._adjustHandlePosition(); }, 250);
   },
@@ -429,16 +477,42 @@ gbif.ui.view.Timeline = Backbone.View.extend({
   _onChangeCurrentCat: function() {
     var self = this;
 
-    var left_handle_x  = parseInt(_.keys(this.years)[0], 10);
-    var right_handle_x = parseInt(_.keys(this.years)[_.size(this.years)-1], 10) + 1;
+    if(typeof cats[this.model.get("current_cat")]['years'] !== 'undefined') {
+      this.$el.find(".legend svg").show();
+      this.$el.find(".slider").show();
 
-    this.model.set("left_handle",  left_handle_x);
-    this.model.set("right_handle", right_handle_x*42);
+      $(this.$el).animate({
+        "height": 150
+      }, 150).removeClass("collapsed");
 
-    setTimeout(function() { self._adjustBothHandles(); }, 250);
+      var left_handle_x  = parseInt(_.keys(this.years)[0], 10);
+      var right_handle_x = parseInt(_.keys(this.years)[_.size(this.years)-1], 10) + 2;
 
-    this._updateLegendTitle();
-    this._updateGraph();
+      this.model.set("left_handle",  left_handle_x+42);
+      this.model.set("right_handle", right_handle_x*42);
+
+      setTimeout(function() { self._adjustBothHandles(); }, 250);
+
+      this._updateLegendTitle();
+      this._updateGraph();
+    } else {
+      this.$el.find(".legend svg").hide();
+      this.$el.find(".slider").hide();
+
+      $(this.$el).animate({
+        "height": 44
+      }, 150).addClass("collapsed");
+
+      this._updateLegendTitle();
+
+      var key = cats[this.model.get("current_cat")]['key'];
+
+      this.model.set("records", aggr_data[key]);
+
+      $(this.$legend_desc).text("Showing all records (" + this.model.get("records") + ")");
+
+      torqueLayer.setKey(key);
+    }
   },
 
   updateCat: function(key, title) {
