@@ -396,7 +396,6 @@ gbif.ui.view.Timeline = Backbone.View.extend({
       item = {};
 
       item['year'] = this.years[i][1];
-      debugger;
       if(Array.isArray(cats[this.model.get("current_cat")]['years'][this.years[i][1]])) {
         var _num = 0;
 
