@@ -95,6 +95,8 @@ gbif.ui.view.Timeline = Backbone.View.extend({
 
   _onChangeCollapsed: function() {
     if(this.model.get("collapsed")) {
+      $("body").addClass("collapsed");
+
       $(this.$el).animate({
         'bottom': '20px',
         'left': '20px',
@@ -115,6 +117,8 @@ gbif.ui.view.Timeline = Backbone.View.extend({
         'right': '20px'
       }, 150);
     } else {
+      $("body").removeClass("collapsed");
+
       if(typeof cats[this.model.get("current_cat")]['years'] !== 'undefined') {
         $(this.$el).animate({
           'bottom': '40px',
@@ -177,9 +181,11 @@ gbif.ui.view.Timeline = Backbone.View.extend({
   _updateDate: function(x, current) {
     var date = 1900;
 
-    if(x === 0) { // hardcode first year :(
+    if(x === 0) { // hardcode no-date
+      date = "NO DATE";
+    } else if(x === 42) { // hardcode pre-date
       date = "PRE";
-    } else if(x === 546) { // hardcode last year :(
+    } else if(x === 588) { // hardcode last year :(
       date = 2020;
     } else {
       _.find(this.years, function(y) {
@@ -240,7 +246,7 @@ gbif.ui.view.Timeline = Backbone.View.extend({
     svg.selectAll(".bar")
       .data(this.data)
       .style("fill", function(d) {
-        var x = parseInt($(this).attr("x"), 10) + 42;
+        var x = parseInt($(this).attr("x"), 10) + 84;
 
         if(x >= self.model.get("left_handle") && x < self.model.get("right_handle")) {
           return "#85C1F9";
@@ -267,18 +273,22 @@ gbif.ui.view.Timeline = Backbone.View.extend({
       }
 
       if(l === 0) {
-        self.model.set("left_year", "pre-1990"); // hardcode first year :(
+        self.model.set("left_year", "no date"); // hardcode no-date
+      } else if(l === 42) {
+        self.model.set("left_year", "pre-1990"); // hardcode pre-date
       } else if(l === y[0]) {
         self.model.set("left_year", y[1]);
       } else if(r === y[0]) {
         self.model.set("right_year", y[1]);
-      } else if(r === 546) {
+      } else if(r === 588) {
         self.model.set("right_year", 2020); // hardcode last year :(
       }
     });
 
     if(l === 0) {
-      cat_array.push("pre", "no");
+      cat_array.push("no");
+    } else if(l === 42) {
+      cat_array.push("pre");
     }
 
     for(var i = 0; i < cat_array.length; i++) {
@@ -318,8 +328,8 @@ gbif.ui.view.Timeline = Backbone.View.extend({
   _enableDrag: function() {
     this.$el.find(".handle").draggable({
       containment: "parent",
-      grid: [this.grid_x, 0],
-      axis: "x",
+      grid:  [this.grid_x, 0],
+      axis:  "x",
       start: this._onStartDrag,
       drag:  this._onDrag,
       stop:  this._onStopDrag
@@ -467,9 +477,9 @@ gbif.ui.view.Timeline = Backbone.View.extend({
     this._enableDrag();
 
     var left_handle_x  = parseInt(_.keys(this.years)[0], 10);
-    var right_handle_x = parseInt(_.keys(this.years)[_.size(this.years)-1], 10) + 2;
+    var right_handle_x = parseInt(_.keys(this.years)[_.size(this.years)-1], 10) + 3;
 
-    this.model.set("left_handle",  left_handle_x+42);
+    this.model.set("left_handle",  left_handle_x+84);
     this.model.set("right_handle", right_handle_x*42);
 
     setTimeout(function() { self._adjustHandlePosition(); }, 250);
@@ -493,9 +503,9 @@ gbif.ui.view.Timeline = Backbone.View.extend({
       }, 150).removeClass("collapsed");
 
       var left_handle_x  = parseInt(_.keys(this.years)[0], 10);
-      var right_handle_x = parseInt(_.keys(this.years)[_.size(this.years)-1], 10) + 2;
+      var right_handle_x = parseInt(_.keys(this.years)[_.size(this.years)-1], 10) + 3;
 
-      this.model.set("left_handle",  left_handle_x+42);
+      this.model.set("left_handle",  left_handle_x+84);
       this.model.set("right_handle", right_handle_x*42);
 
       setTimeout(function() { self._adjustBothHandles(); }, 250);

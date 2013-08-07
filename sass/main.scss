@@ -8,10 +8,22 @@ body,
   height: 100%;
   width: 100%;
   min-height: 450px;
-  min-width: 600px;
   margin: 0;
   padding: 0;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+  &.collapsed {
+    min-width: 718px;
+  }
+}
+
+body {
+  position: relative;
+  min-width: 758px;
+
+  &.collapsed {
+    min-width: 718px;
+  }
 }
 
 strong { font-weight: bold; }
@@ -139,7 +151,7 @@ strong { font-weight: bold; }
   position: absolute;
   z-index: 10;
   left: 40px; bottom: 40px;
-  width: 634px;
+  width: 676px;
   height: 150px;
   border:1px solid #000;
   background: #fff;
@@ -186,7 +198,7 @@ strong { font-weight: bold; }
   position: absolute;
   bottom: 0; left: 48px;
   height: 44px;
-  width: 586px;
+  width: 628px;
   border-top: 1px solid #e5e5e5;
   background: #fff;
   @include border-bottom-right-radius(5px);
@@ -195,7 +207,7 @@ strong { font-weight: bold; }
 .time {
   position: absolute;
   top: 12px; right: 20px;
-  width: 546px
+  width: 588px
 }
 
 .visible_years {
@@ -203,13 +215,14 @@ strong { font-weight: bold; }
   top: 8px;
   height: 4px;
   background: #ddd;
-  width: 546px;
+  width: 588px;
   @include border-radius(2px);
 
-  .noyear {
+  .noyear,
+  .preyear {
     height: 4px;
     width: 42px;
-    background: #fff image-url('noyear.png') no-repeat;
+    background: #fff;
 
     &:before {
       content: "";
@@ -220,13 +233,15 @@ strong { font-weight: bold; }
       @include border-radius(2px);
     }
   }
+
+  .preyear { background: #fff image-url('noyear.png') no-repeat; }
 }
 
 .range {
   .line {
     position: absolute;
     z-index: 101;
-    top: 8px; left: 42px;
+    top: 8px; left: 84px;
     height: 4px;
     width: 42px;
     background: #0099FF;
@@ -236,7 +251,7 @@ strong { font-weight: bold; }
   .square {
     position: absolute;
     z-index: 100;
-    top: -74px; left: 42px;
+    top: -74px; left: 84px;
     height: 106px;
     width: 42px;
     border-left: 1px solid #AFBECA;
@@ -252,14 +267,14 @@ strong { font-weight: bold; }
 .trail {
   position: absolute;
   top: 0px; left: 0px;
-  width: 546px;
+  width: 588px;
   height: 14px;
 }
 
 .handle {
   position: absolute;
   z-index: 300;
-  top: 2px; left: 42px;
+  top: 2px; left: 84px;
   z-index: 300;
   height: 14px;
   width: 14px;
@@ -298,11 +313,12 @@ strong { font-weight: bold; }
     }
   }
 
-  &.right { left: 84px; }
+  &.right { left: 128px; }
 }
 
 .year,
-.noyear {
+.noyear,
+.preyear {
   float: left;
 
   a {
@@ -317,7 +333,7 @@ strong { font-weight: bold; }
 .legend {
   position: absolute;
   top: 0; left: 48px;
-  width: 586px;
+  width: 628px;
 
   h1 {
     padding: 0 20px;
@@ -342,14 +358,16 @@ strong { font-weight: bold; }
   display: none;
   position: absolute;
   bottom: 28px; left: -19px;
-  width: 44px;
-  font-size: 13px;
+  min-width: 24px;
+  padding: 0 10px;
+  font-size: 12px;
   line-height: 28px;
   border: 1px solid #000;
   @include border-radius(5px);
   background: #fff;
   color: #333;
   text-align: center;
+  white-space: nowrap;
 }
 
 .arrow {
