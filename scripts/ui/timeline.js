@@ -101,9 +101,13 @@ gbif.ui.view.Timeline = Backbone.View.extend({
         'height': '44px'
       }, 150).addClass("collapsed");
 
+      $(this.$zoom_control).animate({
+        'margin': '20px 0 0 20px'
+      }, 150);
+
       $(this.$timeline_control).animate({
         'top': '20px',
-        'left': '20px'
+        'left': '100px'
       }, 150);
 
       $(this.$analysis_control).animate({
@@ -124,9 +128,13 @@ gbif.ui.view.Timeline = Backbone.View.extend({
         }, 150);
       }
 
+      $(this.$zoom_control).animate({
+        'margin': '40px 0 0 40px'
+      }, 150);
+
       $(this.$timeline_control).animate({
         'top': '40px',
-        'left': '40px',
+        'left': '120px',
       }, 150);
 
       $(this.$analysis_control).animate({
@@ -446,6 +454,7 @@ gbif.ui.view.Timeline = Backbone.View.extend({
 
     this.$analysis_control = $(".analysis_control");
     this.$timeline_control = $(this.button.$el);
+    this.$zoom_control = $(".leaflet-control-zoom");
 
     this.$legend_title = this.$el.find(".legend .title");
     this.$legend_desc = this.$el.find(".legend .desc");

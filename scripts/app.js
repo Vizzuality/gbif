@@ -28,7 +28,6 @@ function loadGBIF(callback) {
   window.GOD = GOD;
 
   map = new L.Map('map', {
-    zoomControl: false,
     center: [36.60670888641815, 38.627929687],
     zoom: 6
   });

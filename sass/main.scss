@@ -25,7 +25,7 @@ strong { font-weight: bold; }
   position: absolute;
   z-index: 10;
   top: 40px;
-  left: 40px;
+  left: 120px;
 }
 
 .analysis_control {
@@ -95,6 +95,34 @@ strong { font-weight: bold; }
 
 .fullscreen {
   background: #fff image-url('fullscreen.png') no-repeat center;
+}
+
+.leaflet-left .leaflet-control-zoom {
+  margin: 40px 0 0 40px;
+  border: 1px solid #000;
+  @include box-shadow(none);
+
+  a {
+    float: left;
+    height: 36px;
+    width: 36px;
+    border: 0;
+    line-height: 36px;
+    color: #888;
+
+    &:hover {
+      color: #666;
+    }
+
+    &:first-child {
+      @include border-radius(4px 0 0 4px);
+    }
+
+    &:last-child {
+      border-left: 1px solid #CCC;
+      @include border-radius(0 4px 4px 0);
+    }
+  }
 }
 
 
