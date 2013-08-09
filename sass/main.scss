@@ -98,7 +98,7 @@ strong { font-weight: bold; }
     left: -11px;
     height: 22px;
     width: 22px;
-    background: image-url('analysis.png');
+    background: url(../images/analysis.png);
     @include transition(all, .15s);
 
     &.active { @include rotate(45deg); }
@@ -106,7 +106,7 @@ strong { font-weight: bold; }
 }
 
 .fullscreen {
-  background: #fff image-url('fullscreen.png') no-repeat center;
+  background: #fff url(../images/fullscreen.png) no-repeat center;
 }
 
 .leaflet-left .leaflet-control-zoom {
@@ -234,7 +234,9 @@ strong { font-weight: bold; }
     }
   }
 
-  .preyear { background: #fff image-url('noyear.png') no-repeat; }
+  .preyear { background: #fff url(../images/noyear.png) no-repeat; }
+
+
 }
 
 .range {
@@ -423,7 +425,7 @@ strong { font-weight: bold; }
     height: 9px;
     width: 9px;
     line-height: 40px;
-    background: image-url('menu.png');
+    background: url(../images/menu.png);
   }
 
   &.selected,
@@ -431,7 +433,7 @@ strong { font-weight: bold; }
     color: #666;
 
     i {
-      background: image-url('menu-selected.png');
+      background: url(../images/menu-selected.png);
     }
   }
 }
