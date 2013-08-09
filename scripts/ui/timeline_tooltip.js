@@ -88,14 +88,19 @@ gbif.ui.view.TimelineTooltip = Backbone.View.extend({
   _onCatClick: function(e) {
     e.preventDefault();
 
-    var link = $(e.target);
+    var $link = $(e.target);
 
     $(".timeline_tooltip_link").removeClass("selected");
-    link.addClass("selected");
+
+    if(!$link.hasClass("timeline_tooltip_link")) {
+      $link = $link.closest(".timeline_tooltip_link");
+    }
+
+    $link.addClass("selected");
 
     this.hide();
 
-    timeline.updateCat(link.attr("data-key"), link.attr("data-title"));
+    timeline.updateCat($link.attr("data-key"), $link.attr("data-title"));
   },
 
   render: function() {

@@ -182,7 +182,7 @@ strong {
   left: -11px;
   height: 22px;
   width: 22px;
-  background: url('/images/analysis.png?1374853213');
+  background: url(../images/analysis.png);
   -webkit-transition: all, 0.15s;
   -moz-transition: all, 0.15s;
   -o-transition: all, 0.15s;
@@ -199,7 +199,7 @@ strong {
 
 /* line 108, ../sass/main.scss */
 .fullscreen {
-  background: white url('/images/fullscreen.png?1375254521') no-repeat center;
+  background: white url(../images/fullscreen.png) no-repeat center;
 }
 
 /* line 112, ../sass/main.scss */
@@ -373,7 +373,7 @@ strong {
 }
 /* line 237, ../sass/main.scss */
 .visible_years .preyear {
-  background: white url('/images/noyear.png?1375767393') no-repeat;
+  background: white url(../images/noyear.png) no-repeat;
 }
 
 /* line 241, ../sass/main.scss */
@@ -529,8 +529,8 @@ strong {
   position: absolute;
   bottom: 28px;
   left: -19px;
-  min-width: 24px;
-  padding: 0 10px;
+  min-width: 28px;
+  padding: 0 8px;
   font-size: 12px;
   line-height: 28px;
   border: 1px solid #000;
@@ -608,7 +608,7 @@ strong {
   height: 9px;
   width: 9px;
   line-height: 40px;
-  background: url('/images/menu.png?1375456378');
+  background: url(../images/menu.png);
 }
 /* line 430, ../sass/main.scss */
 .timeline_tooltip_link.selected, .timeline_tooltip_link:hover {
@@ -616,7 +616,7 @@ strong {
 }
 /* line 433, ../sass/main.scss */
 .timeline_tooltip_link.selected i, .timeline_tooltip_link:hover i {
-  background: url('/images/menu-selected.png?1375456776');
+  background: url(../images/menu-selected.png);
 }
 
 /* line 439, ../sass/main.scss */
@@ -669,7 +669,7 @@ strong {
 .analysis_subscribe {
   display: none;
   position: absolute;
-  z-index: 600;
+  z-index: 1100;
   top: 150px;
   left: 50%;
   margin-left: -219px;
@@ -761,7 +761,7 @@ strong {
 .backdrop {
   display: none;
   position: absolute;
-  z-index: 500;
+  z-index: 1000;
   top: 0;
   bottom: 0;
   left: 0;

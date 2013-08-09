@@ -255,8 +255,8 @@ gbif.ui.view.Timeline = Backbone.View.extend({
         }
       });
 
-    var l = this.$left_handle.position().left;
-    var r = this.$right_handle.position().left;
+    var l = this.model.get("left_handle");
+    var r = this.model.get("right_handle");
 
     this._updateDate(l, "left");
     this._updateDate(r, "right");
@@ -265,7 +265,7 @@ gbif.ui.view.Timeline = Backbone.View.extend({
         key_array = [],
         nums_array = 0;
 
-    this.$range.find("div").css({ left: this.model.get("left_handle"), width: this.model.get("right_handle") - this.model.get("left_handle") });
+    this.$range.find("div").css({ left: l, width: r - l });
 
     _.find(this.years, function(y) {
       if(l <= y[0] && r > y[0]) {
@@ -278,7 +278,9 @@ gbif.ui.view.Timeline = Backbone.View.extend({
         self.model.set("left_year", "pre-1990"); // hardcode pre-date
       } else if(l === y[0]) {
         self.model.set("left_year", y[1]);
-      } else if(r === y[0]) {
+      }
+
+      if(r === y[0]) {
         self.model.set("right_year", y[1]);
       } else if(r === 588) {
         self.model.set("right_year", 2020); // hardcode last year :(
