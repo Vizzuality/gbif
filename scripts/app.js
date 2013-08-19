@@ -8,6 +8,17 @@ var loaded        = false,
     aggr_data     = null,
     total_data    = 0;
 
+var TORQUE_LAYER_CARTOCSS= [
+    '#layer {',
+    '  polygon-fill: #FFFF00;',
+    '  [value > 10] { polygon-fill: #FFCC00; }',
+    '  [value > 100] { polygon-fill: #FF9900; }',
+    '  [value > 1000] { polygon-fill: #FF6600; }',
+    '  [value > 10000] { polygon-fill: #FF3300; }',
+    '  [value > 100000] { polygon-fill: #CC0000; }',
+    '}'
+].join('\n');
+
 function get_aggregated(callback) {
   torqueLayer.provider.getTile({ x: 0, y: 0 }, 0, function(data) {
     aggr_data = torqueLayer.provider.aggregateByKey(data.rows);
@@ -29,7 +40,7 @@ function loadGBIF(callback) {
 
   map = new L.Map('map', {
     center: [36.60670888641815, 38.627929687],
-    zoom: 6
+    zoom: 2
   });
 
   L.tileLayer('http://b.tile.cloudmade.com/BC9A493B41014CAABB98F0471D759707/999/256/{z}/{x}/{y}.png', {
@@ -47,11 +58,13 @@ function loadGBIF(callback) {
     table: 'importing_1369045322_helsinki_manydays_live',
     column: 'ac',
     countby: 'count(mm)',
-    pixel_size: 3
+    pixel_size: 3,
+    valueDataType: Float32Array
   });
 
   torqueLayer.addTo(map);
   torqueLayer.setKey([2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]);
+  torqueLayer.renderer.setCartoCSS(TORQUE_LAYER_CARTOCSS);
 
   get_aggregated(function() {
     timeline = new gbif.ui.view.Timeline({
