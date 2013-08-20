@@ -54,14 +54,6 @@ function loadGBIF(callback) {
     provider: 'url_template',
     url: config.GBIF_URL,
     resolution: 4,
-    cummulative: true,
-    start_date: 0,
-    end_date: 220,
-    step: 1,
-    table: 'importing_1369045322_helsinki_manydays_live',
-    column: 'ac',
-    countby: 'count(mm)',
-    pixel_size: 3,
     valueDataType: Float32Array
   });
 
