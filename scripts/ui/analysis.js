@@ -143,10 +143,7 @@ gbif.ui.view.Analysis = gbif.core.View.extend({
     this.dialog = new gbif.ui.view.AnalysisSubscribe();
 
     $("body").append(this.button.render());
-
     $("body").append(this.dialog.render());
-
-    return this.$el;
   }
 });
 

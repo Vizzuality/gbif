@@ -6,8 +6,8 @@ var config = {
   ANALYSIS_OVERLAY_STYLE: {
     allowIntersection: false,
     shapeOptions: {
-        color: '#DA6D64',
-        opacity: 1
+      color: '#DA6D64',
+      opacity: 1
     }
   }
 };
