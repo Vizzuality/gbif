@@ -84,11 +84,11 @@ body.collapsed,
 /* line 20, ../sass/main.scss */
 body {
   position: relative;
-  min-width: 758px;
+  min-width: 806px;
 }
 /* line 24, ../sass/main.scss */
 body.collapsed {
-  min-width: 718px;
+  min-width: 766px;
 }
 
 /* line 29, ../sass/main.scss */

@@ -116,6 +116,11 @@ gbif.ui.view.Timeline = Backbone.View.extend({
         'top': '20px',
         'right': '20px'
       }, 150);
+
+      $(this.$layer_selector_control).animate({
+        'bottom': '20px',
+        'right': '20px'
+      }, 150);
     } else {
       $("body").removeClass("collapsed");
 
@@ -144,6 +149,11 @@ gbif.ui.view.Timeline = Backbone.View.extend({
       $(this.$analysis_control).animate({
         'top': '40px',
         'right': '40px',
+      }, 150);
+
+      $(this.$layer_selector_control).animate({
+        'bottom': '40px',
+        'right': '40px'
       }, 150);
     }
   },
@@ -466,6 +476,7 @@ gbif.ui.view.Timeline = Backbone.View.extend({
     this.$analysis_control = $(".analysis_control");
     this.$timeline_control = $(this.button.$el);
     this.$zoom_control = $(".leaflet-control-zoom");
+    this.$layer_selector_control = $(".layer_selector");
 
     this.$legend_title = this.$el.find(".legend .title");
     this.$legend_desc = this.$el.find(".legend .desc");
