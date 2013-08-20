@@ -1,5 +1,6 @@
 var loaded        = false,
-    map           = {}
+    map           = {},
+    baseMap       = {},
     GOD           = {},
     analysis      = {},
     timeline      = {},
@@ -43,9 +44,11 @@ function loadGBIF(callback) {
     zoom: 2
   });
 
-  L.tileLayer('http://b.tile.cloudmade.com/BC9A493B41014CAABB98F0471D759707/999/256/{z}/{x}/{y}.png', {
+  baseMap = new L.tileLayer('http://{s}.tile.cloudmade.com/BC9A493B41014CAABB98F0471D759707/999/256/{z}/{x}/{y}.png', {
     attribution: 'Stamen'
-  }).addTo(map);
+  });
+
+  baseMap.addTo(map);
 
   torqueLayer = new L.TiledTorqueLayer({
     provider: 'url_template',
@@ -64,6 +67,7 @@ function loadGBIF(callback) {
 
   torqueLayer.addTo(map);
   torqueLayer.setKey([2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]);
+  torqueLayer.setZIndex(1000);
   torqueLayer.renderer.setCartoCSS(TORQUE_LAYER_CARTOCSS);
 
   get_aggregated(function() {
@@ -77,6 +81,10 @@ function loadGBIF(callback) {
   // Analysis
   analysis = new gbif.ui.view.Analysis({ map: map });
   $("body").append(analysis.render());
+
+  // Layer selector
+  layerSelector = new gbif.ui.view.LayerSelector({ map: map });
+  $("body").append(layerSelector.render());
 }
 
 $(function() {

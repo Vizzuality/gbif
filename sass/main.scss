@@ -52,7 +52,7 @@ strong { font-weight: bold; }
   float: left;
   width: 36px;
   height: 36px;
-  border:1px solid #000;
+  border: 1px solid #000;
   background: #fff;
   @include border-radius(5px);
   outline: none;
@@ -135,6 +135,51 @@ strong { font-weight: bold; }
       @include border-radius(0 4px 4px 0);
     }
   }
+}
+
+
+/* layer selector */
+
+.layer_selector {
+  position: absolute;
+  z-index: 10;
+  bottom: 40px; right: 40px;
+  width: 38px;
+
+  ul {
+    position: absolute;
+    bottom: 0;
+  }
+
+  li {
+    position: relative;
+    margin-bottom: 5px;
+    @include border-radius(5px);
+    background: #000;
+
+    &:last-child { margin-bottom: 0; }
+
+    &.gray-blue a { background-position: 0 -36px; }
+    &.satellite a { background-position: 0 -72px; }
+
+    &.selected a { opacity: 1; }
+
+    a {
+      display: block;
+      width: 36px;
+      height: 36px;
+      border: 1px solid #000;
+      @include border-radius(5px);
+      background: url('../images/layer_selector-sprite.png') no-repeat;
+      opacity: .6;
+    }
+  }
+}
+
+.layers {
+  width: 100%;
+  height: 0;
+  opacity: 0;
 }
 
 

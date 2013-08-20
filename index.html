@@ -66,6 +66,7 @@
   <script src="scripts/ui/analysis.js"></script>
   <script src="scripts/ui/timeline_tooltip.js"></script>
   <script src="scripts/ui/timeline.js"></script>
+  <script src="scripts/ui/layer_selector.js"></script>
 
   <script src="scripts/helpers.js"></script>
   <script src="scripts/app.js"></script>
@@ -161,6 +162,18 @@
         <span>Submit my comments</span>
       </a>
     </form>
+  </script>
+
+  <!-- layer selector -->
+  <script id="layer_selector-template" type="text/x-underscore-template">
+    <ul class="selected_layer"></ul>
+    <ul class="layers"></ul>
+  </script>
+
+  <script id="layer-template" type="text/x-underscore-template">
+    <li id="<%= name %>" class="<%= name %> <%= selected ? 'selected' : '' %>">
+      <a href="#"></a>
+    </li>
   </script>
 </body>
 </html>
