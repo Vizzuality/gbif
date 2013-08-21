@@ -2188,6 +2188,15 @@ L.TorqueLayer = L.CanvasLayer.extend({
   setKey: function(key) {
     this.key = key;
     this.redraw();
+  },
+
+
+  /**
+   * set the cartocss for the current renderer
+   */
+  setCartoCSS: function(cartocss) {
+    if (!this.renderer) throw new Error('renderer is not valid');
+    return this.renderer.setCartoCSS(cartocss);
   }
 
 });
@@ -2237,7 +2246,11 @@ L.TiledTorqueLayer = L.TileLayer.Canvas.extend({
   _loadTile: function(tile, tilePoint) {
     var self = this;
     L.TileLayer.Canvas.prototype._loadTile.apply(this, arguments);
-    this.provider.getTileData(tilePoint, this._map.getZoom(), function(tileData) {
+
+    // get the data from adjusted point but render in the right canvas
+    var adjusted = tilePoint.clone()
+    this._adjustTilePoint(adjusted);
+    this.provider.getTileData(adjusted, this._map.getZoom(), function(tileData) {
       self._tileLoaded(tile, tilePoint, tileData);
       L.DomUtil.addClass(tile, 'leaflet-tile-loaded');
     });
@@ -2257,6 +2270,14 @@ L.TiledTorqueLayer = L.TileLayer.Canvas.extend({
   setKey: function(key) {
     this.key = key;
     this.redraw();
+  },
+
+  /**
+   * set the cartocss for the current renderer
+   */
+  setCartoCSS: function(cartocss) {
+    if (!this.renderer) throw new Error('renderer is not valid');
+    return this.renderer.setCartoCSS(cartocss);
   }
 
 });

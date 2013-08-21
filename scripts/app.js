@@ -54,7 +54,8 @@ function loadGBIF(callback) {
     provider: 'url_template',
     url: config.GBIF_URL,
     resolution: 4,
-    valueDataType: Float32Array
+    valueDataType: Float32Array,
+    continuousWorld: false
   });
 
   torqueLayer.addTo(map);
