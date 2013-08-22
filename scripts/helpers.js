@@ -1,3 +1,9 @@
+function getURLParameter(name) {
+  return decodeURI(
+    (RegExp(name + '=' + '(.+?)(&|$)').exec(location.search)||[,null])[1]
+  );
+}
+
 var config = {
   GBIF_URL:       "http://apidev.gbif.org/map/density/tile/density/tile.tcjson?key=1&x={x}&y={y}&z={z}&type=TAXON",
   GRAPH_MARGIN:   10,
