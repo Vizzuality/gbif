@@ -1,29 +1,25 @@
 @import "compass/reset";
 @import "compass/css3";
 
+$step_x: 37px;
 
-html,
-body,
+#wrapper {
+  position: relative;
+  width: 627px;
+  height: 423px;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+:-webkit-full-screen #wrapper {
+  width: 100%;
+  height: 100%;
+}
+
 #map {
   height: 100%;
   width: 100%;
-  min-height: 450px;
   margin: 0;
   padding: 0;
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-
-  &.collapsed {
-    min-width: 718px;
-  }
-}
-
-body {
-  position: relative;
-  min-width: 806px;
-
-  &.collapsed {
-    min-width: 766px;
-  }
 }
 
 strong { font-weight: bold; }
@@ -36,15 +32,13 @@ strong { font-weight: bold; }
 .timeline_control {
   position: absolute;
   z-index: 10;
-  top: 40px;
-  left: 120px;
+  top: 10px; left: 95px;
 }
 
 .analysis_control {
   position: absolute;
   z-index: 10;
-  top: 40px;
-  right: 40px;
+  top: 10px; right: 10px;
 }
 
 .button {
@@ -56,6 +50,10 @@ strong { font-weight: bold; }
   background: #fff;
   @include border-radius(5px);
   outline: none;
+
+  &:hover {
+    background-color: #F4F4F4;
+  }
 }
 
 .analysis_explanation {
@@ -110,7 +108,7 @@ strong { font-weight: bold; }
 }
 
 .leaflet-left .leaflet-control-zoom {
-  margin: 40px 0 0 40px;
+  margin: 10px 0 0 10px;
   border: 1px solid #000;
   @include box-shadow(none);
 
@@ -121,7 +119,6 @@ strong { font-weight: bold; }
     border: 0;
     line-height: 36px;
     color: #888;
-    background: #fff;
 
     &:hover {
       color: #666;
@@ -144,27 +141,32 @@ strong { font-weight: bold; }
 .layer_selector {
   position: absolute;
   z-index: 10;
-  bottom: 40px; right: 40px;
-  height: 38px;
-  width: 38px;
+  top: 58px; right: 10px;
+  height: 32px;
+  width: 32px;
   @include border-radius(5px);
   background: #fff;
   border: 1px solid #000;
   padding: 2px;
 
+  &:hover { background: #f4f4f4; }
+
   ul {
     position: absolute;
-    bottom: 2px;
-    width: 38px;
+    bottom: 2px; right: 2px;
+    width: 32px;
+    height: 32px;
   }
 
   li {
     position: relative;
-    margin-bottom: 5px;
+    float: right;
+    margin-left: 5px;
     @include border-radius(4px);
     background: #000;
 
-    &:last-child { margin-bottom: 0; }
+    &:first-child { margin-left: 8px; }
+    &:last-child { margin-left: 0; }
 
     &.gray-blue a { background-position: 0 -36px; }
     &.satellite a { background-position: 0 -72px; }
@@ -173,8 +175,8 @@ strong { font-weight: bold; }
 
     a {
       display: block;
-      width: 36px;
-      height: 36px;
+      width: 30px;
+      height: 30px;
       border: 1px solid #333;
       @include border-radius(4px);
       background: url('../images/layer_selector-sprite.png') no-repeat;
@@ -202,10 +204,10 @@ strong { font-weight: bold; }
 .timeline {
   position: absolute;
   z-index: 10;
-  left: 40px; bottom: 40px;
-  width: 676px;
-  height: 150px;
-  border:1px solid #000;
+  left: 10px; bottom: 25px;
+  width: 605px;
+  height: 44px;
+  border: 1px solid #000;
   background: #fff;
   @include border-radius(5px);
   @include box-shadow(0 0 6px 1px rgba(#000, .15));
@@ -223,14 +225,14 @@ strong { font-weight: bold; }
 .hamburger {
   position: relative;
   z-index: 100;
-  width: 48px;
+  width: 44px;
   height: 150px;
   border-right: 1px solid #e5e5e5;
 
   a {
     display: block;
     float: left;
-    width: 48px;
+    width: 44px;
     height: 44px;
     border-bottom: 1px solid #e5e5e5;
     border-right: 1px solid #e5e5e5;
@@ -248,9 +250,9 @@ strong { font-weight: bold; }
 .slider {
   float: left;
   position: absolute;
-  bottom: 0; left: 48px;
+  bottom: 0; left: 45px;
   height: 44px;
-  width: 628px;
+  width: 560px;
   border-top: 1px solid #e5e5e5;
   background: #fff;
   @include border-bottom-right-radius(5px);
@@ -258,44 +260,39 @@ strong { font-weight: bold; }
 
 .time {
   position: absolute;
-  top: 12px; right: 20px;
-  width: 588px
+  top: 20px; right: 21px;
+  width: 518px;
 }
 
 .visible_years {
-  position: absolute;
-  top: 8px;
   height: 4px;
-  background: #ddd;
-  width: 588px;
+  background: #ddd url(../images/noyear.png) no-repeat 73px 0;
   @include border-radius(2px);
 
   .noyear,
   .preyear {
     height: 4px;
-    width: 42px;
+    width: $step_x;
     background: #fff;
 
     &:before {
       content: "";
       display: block;
       height: 4px;
-      width: 20px;
+      width: 4px;
       background: #ddd;
       @include border-radius(2px);
     }
   }
-
-  .preyear { background: #fff url(../images/noyear.png) no-repeat; }
 }
 
 .range {
   .line {
     position: absolute;
     z-index: 101;
-    top: 8px; left: 84px;
+    top: 0; left: $step_x * 2;
     height: 4px;
-    width: 42px;
+    width: 0;
     background: #0099FF;
     @include border-radius(2px);
   }
@@ -303,30 +300,26 @@ strong { font-weight: bold; }
   .square {
     position: absolute;
     z-index: 100;
-    top: -74px; left: 84px;
+    top: -82px; left: $step_x * 2;
     height: 106px;
-    width: 42px;
+    width: 0;
     border-left: 1px solid #AFBECA;
     border-right: 1px solid #AFBECA;
     background: rgba(#4CA4F7, .2);
   }
 }
 
+.trail,
 .years {
   position: absolute;
-}
-
-.trail {
-  position: absolute;
-  top: 0px; left: 0px;
-  width: 588px;
-  height: 14px;
+  top: -6px; left: 0px;
+  width: 100%;
 }
 
 .handle {
   position: absolute;
   z-index: 300;
-  top: 2px; left: 84px;
+  top: 0; left: $step_x * 2;
   z-index: 300;
   height: 14px;
   width: 14px;
@@ -349,7 +342,7 @@ strong { font-weight: bold; }
 
   &.ui-draggable-dragging,
   &:hover {
-    top: 0;
+    margin-top: -2px;
     margin-left: -9px;
     width: 18px;
     height: 18px;
@@ -359,13 +352,9 @@ strong { font-weight: bold; }
       top: 6px;
       left: 6px;
     }
-
-    .tipsy {
-      bottom: 30px; left: -17px;
-    }
   }
 
-  &.right { left: 128px; }
+  &.right { left: $step_x * 2; }
 }
 
 .year,
@@ -377,15 +366,15 @@ strong { font-weight: bold; }
     position: relative;
     z-index: 200;
     display: inline-block;
-    height: 22px;
-    width: 42px;
+    height: 16px;
+    width: $step_x;
   }
 }
 
 .legend {
   position: absolute;
-  top: 0; left: 48px;
-  width: 628px;
+  top: 0; left: 45px;
+  width: 560px;
 
   h1 {
     padding: 0 20px;
@@ -402,14 +391,14 @@ strong { font-weight: bold; }
   }
 
   .bar {
-    fill: #85C1F9;
+    fill: #e5e5e5;
   }
 }
 
 .tipsy {
   display: none;
   position: absolute;
-  bottom: 28px; left: -19px;
+  z-index: 300;
   min-width: 28px;
   padding: 0 8px;
   font-size: 12px;
@@ -531,8 +520,9 @@ strong { font-weight: bold; }
   display: none;
   position: absolute;
   z-index: 1100;
-  top: 150px; left: 50%;
-  margin-left: -219px;
+  top: 50%; left: 50%;
+  margin-top: -172px;
+  margin-left: -240px;
   width: 438px;
   min-height: 300px;
   padding: 20px;
@@ -561,7 +551,7 @@ strong { font-weight: bold; }
 
   .cancel {
     display: inline-block;
-    line-height: 35px;
+    line-height: $step_x;
     color: #FF2626;
     text-decoration: none;
     font-size: 14px;
@@ -572,7 +562,7 @@ strong { font-weight: bold; }
     position: relative;
     float: right;
     padding: 0 15px;
-    line-height: 35px;
+    line-height: $step_x;
     @include background(linear-gradient(#00B1EC, #09c));
     @include border-radius(3px);
     color: #fff;

@@ -90,7 +90,7 @@ gbif.ui.view.LayerSelector = Backbone.View.extend({
 
       this.$layers.animate({
         opacity: 0,
-        height: 0
+        width: 0
       }, 150, function() {
         self.$layers.hide();
         self.$selected_layer.fadeIn(150);
@@ -102,7 +102,7 @@ gbif.ui.view.LayerSelector = Backbone.View.extend({
         self.$layers.show();
         self.$layers.animate({
           opacity: 1,
-          height: 124
+          width: 124
         }, 150);
       });
     }
