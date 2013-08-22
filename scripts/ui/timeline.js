@@ -2,7 +2,7 @@ gbif.ui.view.TimelineButton = Backbone.View.extend({
   className: 'timeline_control',
 
   events: {
-    'click a#fullscreen': '_onClickButton'
+    'click .fullscreen': '_onClickButton'
   },
 
   initialize: function() {
@@ -46,13 +46,23 @@ gbif.ui.view.Timeline = Backbone.View.extend({
   },
 
   initialize: function() {
+    var self = this;
+
     _.bindAll(this, "_onStartDrag", "_onDrag", "_onStopDrag", "_onChangeCollapsed", "_onChangeCurrentCat", "_onHandleAdjusted");
 
     this.model = new gbif.ui.model.Timeline();
 
     // bindings
     this.model.bind("change:collapsed", this._onChangeCollapsed);
-    this.model.bind("change:current_cat", this._onChangeCurrentCat);    
+    this.model.bind("change:current_cat", this._onChangeCurrentCat);
+
+    $(document).bind('webkitfullscreenchange mozfullscreenchange fullscreenchange', function() {
+      if(self.model.get("collapsed")) {
+        self.model.set("collapsed", false);
+      } else {
+        self.model.set("collapsed", true);
+      }
+    });
 
     // defaults
     this.grid_x = 37;
@@ -88,10 +98,24 @@ gbif.ui.view.Timeline = Backbone.View.extend({
   },
 
   toggle: function() {
-    if(this.model.get("collapsed")) {
-      this.model.set("collapsed", false);
+    //fullscreen
+    if (!document.fullscreenElement && // alternative standard method
+        !document.mozFullScreenElement && !document.webkitFullscreenElement) { // current working methods
+      if (document.documentElement.requestFullscreen) {
+        document.documentElement.requestFullscreen();
+      } else if (document.documentElement.mozRequestFullScreen) {
+        document.documentElement.mozRequestFullScreen();
+      } else if (document.documentElement.webkitRequestFullscreen) {
+        document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+      }
     } else {
-      this.model.set("collapsed", true);
+      if (document.cancelFullScreen) {
+        document.cancelFullScreen();
+      } else if (document.mozCancelFullScreen) {
+        document.mozCancelFullScreen();
+      } else if (document.webkitCancelFullScreen) {
+        document.webkitCancelFullScreen();
+      }
     }
   },
 
@@ -101,8 +125,6 @@ gbif.ui.view.Timeline = Backbone.View.extend({
         margin_expanded = 40;
 
     if(this.model.get("collapsed")) {
-      this.$wrapper.addClass("collapsed");
-
       $(this.$el).animate({
         'bottom': margin_bottom,
         'left': margin,
@@ -129,8 +151,6 @@ gbif.ui.view.Timeline = Backbone.View.extend({
         'right': margin
       }, 150);
     } else {
-      this.$wrapper.removeClass("collapsed");
-
       if(typeof cats[this.model.get("current_cat")]['years'] != 'undefined') {
         $(this.$el).animate({
           'bottom': margin_expanded,

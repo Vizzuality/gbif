@@ -4,18 +4,15 @@
 $step_x: 37px;
 
 #wrapper {
-  position: relative;
-  width: 627px;
-  height: 423px;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100%;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
-:-webkit-full-screen #wrapper {
-  width: 100%;
-  height: 100%;
-}
-
 #map {
+  position: absolute;
   height: 100%;
   width: 100%;
   margin: 0;
