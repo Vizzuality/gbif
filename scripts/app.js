@@ -65,7 +65,7 @@ function loadGBIF(callback) {
 
   get_aggregated(function() {
     timeline = new gbif.ui.view.Timeline({
-      container: $("body")
+      container: $("#wrapper")
     });
 
     timeline.timeline_tooltip.addHandler(".hamburger a");
@@ -73,11 +73,11 @@ function loadGBIF(callback) {
 
   // Analysis
   analysis = new gbif.ui.view.Analysis({ map: map });
-  $("body").append(analysis.render());
+  $("#wrapper").append(analysis.render());
 
   // Layer selector
   layerSelector = new gbif.ui.view.LayerSelector({ map: map });
-  $("body").append(layerSelector.render());
+  $("#wrapper").append(layerSelector.render());
 }
 
 $(function() {
