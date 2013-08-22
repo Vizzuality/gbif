@@ -1113,7 +1113,7 @@ exports.Profiler = Profiler;
   var DEFAULT_CARTOCSS = [
     '#layer {',
     '  marker-fill: #662506;',
-    '  marker-width: 20;',
+    '  marker-width: 4;',
     '  [value > 1] { marker-fill: #FEE391; }',
     '  [value > 2] { marker-fill: #FEC44F; }',
     '  [value > 3] { marker-fill: #FE9929; }',
@@ -1298,12 +1298,16 @@ exports.Profiler = Profiler;
     },
 
     renderTileAccum: function(accum, px, py) {
-      var color, x, y;
+      var color, x, y, alpha;
       var res = this.options.resolution;
       var ctx = this._ctx;
       var s = (256/res) | 0;
       var s2 = s*s;
       var colors = this._colors;
+      if(this.options.blendmode) {
+        ctx.globalCompositeOperation = this.options.blendmode;
+      }
+      var polygon_alpha = this._shader['polygon-opacity'] || function() { return 1.0; };
       for(var i = 0; i < s2; ++i) {
         var xy = i;
         var value = accum[i];
@@ -1313,6 +1317,11 @@ exports.Profiler = Profiler;
           // by-pass the style generation for improving performance
           color = this._shader['polygon-fill']({ value: value }, { zoom: 0 });
           ctx.fillStyle = color;
+          alpha = polygon_alpha({ value: value }, { zoom: 0 });
+          if(alpha === null) {
+            alpha = 1.0;
+          }
+          ctx.globalAlpha = alpha;
           ctx.fillRect(x * res, 256 - res - y * res, res, res);
         }
       }
