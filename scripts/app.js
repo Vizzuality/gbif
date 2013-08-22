@@ -81,5 +81,12 @@ function loadGBIF(callback) {
 }
 
 $(function() {
-  loadGBIF();
+  // http://vizzuality.github.io/gbif/
+  // http://vizzuality.github.io/gbif/index.html?type?TAXON&key=1
+  // http://vizzuality.github.io/gbif/index.html?type?COUNTRY&key=ES
+  if(getURLParameter("type")) {
+    config.GBIF_URL = "http://apidev.gbif.org/map/density/tile/density/tile.tcjson?key=" + getURLParameter("key") + "&x={x}&y={y}&z={z}&type=" + getURLParameter("type");
+  }
+
+  loadGBIF()
 });
