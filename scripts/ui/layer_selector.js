@@ -59,8 +59,18 @@ gbif.ui.view.LayerSelector = Backbone.View.extend({
 
     this.$layers.empty();
     this.layers.each(function(layer) {
+      layer.set("thumbnail", self._getThumbnail(layer));
       self.$layers.append(template.render( layer.toJSON() ));
     });
+  },
+
+  _getThumbnail: function(layer) {
+    var url = layer.get("url");
+
+    return url.replace(/\{s\}/g, "a")
+      .replace(/\{x\}/g, "0")
+      .replace(/\{y\}/g, "0")
+      .replace(/\{z\}/g, "0");
   },
 
   _addSelectedLayer: function() {
@@ -69,6 +79,8 @@ gbif.ui.view.LayerSelector = Backbone.View.extend({
     });
 
     this.$selected_layer.empty();
+
+    this.selectedLayer.set("thumbnail", this._getThumbnail(this.selectedLayer));
     this.$selected_layer.append(template.render( this.selectedLayer.toJSON() ));
   },
 
