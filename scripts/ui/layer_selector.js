@@ -29,19 +29,33 @@ gbif.ui.view.LayerSelector = Backbone.View.extend({
     this.layers = new gbif.ui.collection.Layers();
 
     this.layers.add(new gbif.ui.model.Layer({
-      name: "stamen",
-      url: "http://{s}.tile.cloudmade.com/BC9A493B41014CAABB98F0471D759707/999/256/{z}/{x}/{y}.png",
-      attribution: "Stamen",
+      name: "dark",
+      url: "http://{s}.tiles.mapbox.com/v3/timrobertson100.map-c9rscfra/{z}/{x}/{y}.png",
+      attribution: 'Mapbox, <a href="http://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap and its contributors</a>',
+    }));
+
+    this.layers.add(new gbif.ui.model.Layer({
+      name: "ocean",
+      url: "http://server.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer/tile/{z}/{y}/{x}.png",
+      attribution: "Esri, DeLorme, FAO, USGS, NOAA, GEBCO, IHO-IOC GEBCO, NGS, NIWA",
       selected: true
     }));
-    this.layers.add(new gbif.ui.model.Layer({
-      name: "gray-blue",
-      url: "http://2.maps.nlp.nokia.com/maptile/2.1/maptile/newest/normal.day.grey/{z}/{x}/{y}/256/png8?app_id=_peU-uCkp-j8ovkzFGNU&app_code=gBoUkAMoxoqIWfxWA5DuMQ",
-      attribution: "Nokia"
-    }));
+
     this.layers.add(new gbif.ui.model.Layer({
       name: "satellite",
-      url: "http://2.maps.nlp.nokia.com/maptile/2.1/maptile/newest/satellite.day/{z}/{x}/{y}/256/png8?app_id=_peU-uCkp-j8ovkzFGNU&app_code=gBoUkAMoxoqIWfxWA5DuMQ",
+      url: "http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}.png",
+      attribution: "Esri, DeLorme, FAO, NOAA, DigitalGlobe, GeoEye, i-cubed, USDA, USGS, AEX, Getmapping, Aerogrid, IGN, IGP, swisstopo, and the GIS User Community",
+    }));
+
+    this.layers.add(new gbif.ui.model.Layer({
+      name: "light",
+      url: "http://{s}.tiles.mapbox.com/v3/timrobertson100.map-s9fg80cf/{z}/{x}/{y}.png",
+      attribution: 'Mapbox, <a href="http://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap and its contributors</a>',
+    }));
+
+    this.layers.add(new gbif.ui.model.Layer({
+      name: "grey-blue",
+      url: "http://2.maps.nlp.nokia.com/maptile/2.1/maptile/newest/normal.day.grey/{z}/{x}/{y}/256/png8?app_id=_peU-uCkp-j8ovkzFGNU&app_code=gBoUkAMoxoqIWfxWA5DuMQ",
       attribution: "Nokia"
     }));
 
@@ -102,7 +116,7 @@ gbif.ui.view.LayerSelector = Backbone.View.extend({
         self.$layers.show();
         self.$layers.animate({
           opacity: 1,
-          width: 124
+          width: 32 * self.layers.length + 5 * (self.layers.length - 2) + 8
         }, 150);
       });
     }

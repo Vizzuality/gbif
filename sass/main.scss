@@ -165,8 +165,10 @@ strong { font-weight: bold; }
     &:first-child { margin-left: 8px; }
     &:last-child { margin-left: 0; }
 
-    &.gray-blue a { background-position: 0 -36px; }
-    &.satellite a { background-position: 0 -72px; }
+    &.ocean a { background-position: 0 -72px; }
+    &.satellite a { background-position: 0 -36px; }
+    &.light a { background-position: 0 -72px; }
+    &.grey-blue a { background-position: 0 -72px; }
 
     &.selected a { opacity: 1; }
 

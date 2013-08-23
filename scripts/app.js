@@ -44,8 +44,8 @@ function loadGBIF(callback) {
     zoom: 2
   });
 
-  baseMap = new L.tileLayer('http://{s}.tile.cloudmade.com/BC9A493B41014CAABB98F0471D759707/999/256/{z}/{x}/{y}.png', {
-    attribution: 'Stamen'
+  baseMap = new L.tileLayer('http://{s}.tiles.mapbox.com/v3/timrobertson100.map-c9rscfra/{z}/{x}/{y}.png', {
+    attribution: 'Mapbox, <a href="http://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap and its contributors</a>'
   });
 
   baseMap.addTo(map);
