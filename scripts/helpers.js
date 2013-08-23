@@ -1,14 +1,14 @@
 function getURLParameter(name) {
   return decodeURI(
-    (RegExp(name + '=' + '(.+?)(&|$)').exec(location.search)||[,null])[1]
+    (RegExp(name + '=' + '(.+?)(&|$)').exec(location.search)||[,""])[1]
   );
 }
 
 var config = {
-  GBIF_URL:       "http://apidev.gbif.org/map/density/tile/density/tile.tcjson?key=1&x={x}&y={y}&z={z}&type=TAXON",
-  GRAPH_MARGIN:   10,
-  GRAPH_H:        40,
-  GRAPH_W:        444,
+  GBIF_URL: "http://apidev.gbif.org/map/density/tile/density/tile.tcjson?key=1&x={x}&y={y}&z={z}&type=TAXON",
+  GRAPH_MARGIN: 10,
+  GRAPH_H: 40,
+  GRAPH_W: 444,
   ANALYSIS_OVERLAY_STYLE: {
     allowIntersection: false,
     shapeOptions: {
@@ -17,6 +17,34 @@ var config = {
     }
   }
 };
+
+var layers = {
+  "dark": {
+    "name": "dark",
+    "url": "http://{s}.tiles.mapbox.com/v3/timrobertson100.map-c9rscfra/{z}/{x}/{y}.png",
+    "attribution": "Mapbox, <a href='http://www.openstreetmap.org/copyright' target='_blank'>OpenStreetMap and its contributors</a>"  
+  },
+  "ocean": {
+    "name": "ocean",
+    "url": "http://server.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer/tile/{z}/{y}/{x}.png",
+    "attribution": "Esri, DeLorme, FAO, USGS, NOAA, GEBCO, IHO-IOC GEBCO, NGS, NIWA"
+  },
+  "satellite": {
+    "name": "satellite",
+    "url": "http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}.png",
+    "attribution": "Esri, DeLorme, FAO, NOAA, DigitalGlobe, GeoEye, i-cubed, USDA, USGS, AEX, Getmapping, Aerogrid, IGN, IGP, swisstopo, and the GIS User Community"
+  },
+  "light": {
+    "name": "light",
+    "url": "http://{s}.tiles.mapbox.com/v3/timrobertson100.map-s9fg80cf/{z}/{x}/{y}.png",
+    "attribution": "Mapbox, <a href='http://www.openstreetmap.org/copyright' target='_blank'>OpenStreetMap and its contributors</a>"  
+  },
+  "grey-blue": {
+    "name": "grey-blue",
+    "url": "http://2.maps.nlp.nokia.com/maptile/2.1/maptile/newest/normal.day.grey/{z}/{x}/{y}/256/png8?app_id=_peU-uCkp-j8ovkzFGNU&app_code=gBoUkAMoxoqIWfxWA5DuMQ",
+    "attribution": "Nokia"
+  }
+}
 
 var cats = {
   "sp": {

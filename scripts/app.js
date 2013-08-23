@@ -44,9 +44,15 @@ function loadGBIF(callback) {
     zoom: 2
   });
 
-  baseMap = new L.tileLayer('http://{s}.tiles.mapbox.com/v3/timrobertson100.map-c9rscfra/{z}/{x}/{y}.png', {
-    attribution: 'Mapbox, <a href="http://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap and its contributors</a>'
-  });
+  config.LAYER_STYLE = getURLParameter("style") || "dark";
+
+  var layerUrl = layers[config.LAYER_STYLE]['url'];
+
+  var layerOptions = {
+    attribution: layers[config.LAYER_STYLE]['attribution']
+  }
+
+  baseMap = new L.tileLayer(layerUrl, layerOptions);
 
   baseMap.addTo(map);
 
@@ -81,9 +87,10 @@ function loadGBIF(callback) {
 }
 
 $(function() {
-  // http://vizzuality.github.io/gbif/
-  // http://vizzuality.github.io/gbif/index.html?type?TAXON&key=1
-  // http://vizzuality.github.io/gbif/index.html?type?COUNTRY&key=ES
+  // http://vizzuality.github.io/gbif/index.html
+  // http://vizzuality.github.io/gbif/index.html?type=TAXON&key=1
+  // http://vizzuality.github.io/gbif/index.html?type=COUNTRY&key=ES
+  // http://vizzuality.github.io/gbif/index.html?style=satellite
   if(getURLParameter("type")) {
     config.GBIF_URL = "http://apidev.gbif.org/map/density/tile/density/tile.tcjson?key=" + getURLParameter("key") + "&x={x}&y={y}&z={z}&type=" + getURLParameter("type");
   }

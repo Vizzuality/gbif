@@ -22,42 +22,18 @@ gbif.ui.view.LayerSelector = Backbone.View.extend({
   },
 
   initialize: function() {
+    var self = this;
+
     _.bindAll( this, "_toggleOpen");
 
     this.options = _.extend(this.options, this.defaults);
 
     this.layers = new gbif.ui.collection.Layers();
 
-    this.layers.add(new gbif.ui.model.Layer({
-      name: "dark",
-      url: "http://{s}.tiles.mapbox.com/v3/timrobertson100.map-c9rscfra/{z}/{x}/{y}.png",
-      attribution: 'Mapbox, <a href="http://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap and its contributors</a>',
-    }));
-
-    this.layers.add(new gbif.ui.model.Layer({
-      name: "ocean",
-      url: "http://server.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer/tile/{z}/{y}/{x}.png",
-      attribution: "Esri, DeLorme, FAO, USGS, NOAA, GEBCO, IHO-IOC GEBCO, NGS, NIWA",
-      selected: true
-    }));
-
-    this.layers.add(new gbif.ui.model.Layer({
-      name: "satellite",
-      url: "http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}.png",
-      attribution: "Esri, DeLorme, FAO, NOAA, DigitalGlobe, GeoEye, i-cubed, USDA, USGS, AEX, Getmapping, Aerogrid, IGN, IGP, swisstopo, and the GIS User Community",
-    }));
-
-    this.layers.add(new gbif.ui.model.Layer({
-      name: "light",
-      url: "http://{s}.tiles.mapbox.com/v3/timrobertson100.map-s9fg80cf/{z}/{x}/{y}.png",
-      attribution: 'Mapbox, <a href="http://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap and its contributors</a>',
-    }));
-
-    this.layers.add(new gbif.ui.model.Layer({
-      name: "grey-blue",
-      url: "http://2.maps.nlp.nokia.com/maptile/2.1/maptile/newest/normal.day.grey/{z}/{x}/{y}/256/png8?app_id=_peU-uCkp-j8ovkzFGNU&app_code=gBoUkAMoxoqIWfxWA5DuMQ",
-      attribution: "Nokia"
-    }));
+    // layers are defined in helpers.js
+    _.each(layers, function(layer) {
+      self.layers.add(new gbif.ui.model.Layer(layer['name'] === config.LAYER_STYLE ? _.extend(layer, { selected: true }) : layer));
+    });
 
     // this.layers.bind("change", function() { debugger; });
 
