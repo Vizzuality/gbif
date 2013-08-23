@@ -129,6 +129,15 @@ var _torque_reference_latest = {
                 "default-meaning": "no separate buffer will be used and no alpha will be applied to the style after rendering"
             }
         },
+        "trail": {
+          "steps": {
+            "css": "trail-steps",
+            "type": "float",
+            "default-value": 1,
+            "default-meaning": "no trail steps",
+            "doc": "How many steps of trails are going to be rendered"
+          }
+        },
         "polygon": {
             "fill": {
                 "css": "polygon-fill",
@@ -970,12 +979,18 @@ exports.Profiler = Profiler;
     },
 
 
-    getTile: function(coord, zoom, callback) {
+    tileUrl: function(coord, zoom) {
       var template = this.url();
-      template = template
+      var s = (this.options.subdomains || 'abcd')[(coord.x + coord.y + zoom) % 4];
+      return template
         .replace('{x}', coord.x)
         .replace('{y}', coord.y)
-        .replace('{z}', zoom);
+        .replace('{z}', zoom)
+        .replace('{s}', s);
+    },
+
+    getTile: function(coord, zoom, callback) {
+      var template = this.tileUrl(coord, zoom);
 
       var self = this;
       var fetchTime = Profiler.metric('jsonarray:fetch time');
@@ -994,11 +1009,7 @@ exports.Profiler = Profiler;
      * `zoom` quadtree zoom level
      */
     getTileData: function(coord, zoom, callback) {
-      var template = this.url();
-      template = template
-        .replace('{x}', coord.x)
-        .replace('{y}', coord.y)
-        .replace('{z}', zoom);
+      var template = this.tileUrl(coord, zoom);
 
       var self = this;
       var fetchTime = Profiler.metric('jsonarray:fetch time');
@@ -1008,13 +1019,15 @@ exports.Profiler = Profiler;
         var processed = null;
         
         var processingTime = Profiler.metric('jsonarray:processing time');
+        var parsingTime = Profiler.metric('jsonarray:parsing time');
         try {
           processingTime.start();
+          parsingTime.start();
           var rows = JSON.parse(data.responseText || data.response).rows;
+          parsingTime.end();
           processed = self.proccessTile(rows, coord, zoom);
           processingTime.end();
         } catch(e) {
-          processingTime.end();
           console.error("problem parsing JSON on ", coord, zoom);
         }
 
@@ -1111,7 +1124,7 @@ exports.Profiler = Profiler;
   var DEFAULT_CARTOCSS = [
     '#layer {',
     '  marker-fill: #662506;',
-    '  marker-width: 20;',
+    '  marker-width: 4;',
     '  [value > 1] { marker-fill: #FEE391; }',
     '  [value > 2] { marker-fill: #FEC44F; }',
     '  [value > 3] { marker-fill: #FE9929; }',
@@ -1133,6 +1146,9 @@ exports.Profiler = Profiler;
     this._canvas = canvas;
     this._ctx = canvas.getContext('2d');
     this._sprites = {};
+    this._trailsSprites = [];
+    this._shader = null;
+    this._trailsShader = null;
     //carto.tree.Reference.set(torque['torque-reference']);
     this.setCartoCSS(this.options.cartocss || DEFAULT_CARTOCSS);
   }
@@ -1150,20 +1166,31 @@ exports.Profiler = Profiler;
     setCartoCSS: function(cartocss) {
       // clean sprites
       this._sprites = {};
+      this._trailsSprites = [];
       this._cartoCssStyle = new carto.RendererJS().render(cartocss);
-      if(this._cartoCssStyle.getLayers().length > 1) {
-        throw new Error("only one CartoCSS layer is supported");
+      if(this._cartoCssStyle.getLayers().length < 1) {
+        throw new Error("CartoCSS must have at least one layer");
       }
-      this._shader = this._cartoCssStyle.getLayers()[0];
+      this._shader = this._cartoCssStyle.getDefault();
+      if(!this._shader) {
+        throw new Error("there is not default layer in CartoCSS");
+      }
+
+      this._trailsShader = this._cartoCssStyle.findLayer({ attachment: 'trails' });
+      if(this._trailsShader) {
+        var st = this._trailsShader.getStyle('canvas-2d', { value: 0}, {zoom: 1});
+        this._trailSteps = +st['trail-steps'];
+      }
+
     },
 
     //
     // generate sprite based on cartocss style
     //
-    generateSprite: function(value, tile) {
-      var st = this._shader.getStyle('canvas-2d', {
+    generateSprite: function(shader, value, shaderVars) {
+      var st = shader.getStyle('canvas-2d', {
         value: value
-      }, { zoom: tile.zoom });
+      }, shaderVars);
 
       var pointSize = st['point-radius'];
       if(!pointSize) {
@@ -1184,16 +1211,25 @@ exports.Profiler = Profiler;
       return canvas;
     },
 
+    renderTile: function(tile, key) {
+      this._renderTile(tile, key, this._sprites, this._shader);
+      if(this._trailsShader) {
+        for(var i = 0; i < this._trailSteps; ++i) {
+          this._trailsSprites[i] = this._trailsSprites[i] || {};
+          this._renderTile(tile, key - (i + 1), this._trailsSprites[i], this._trailsShader, { 'trail-step': i + 1 });
+        }
+      }
+    },
+
     //
     // renders a tile in the canvas for key defined in 
     // the torque tile
     //
-    renderTile: function(tile, key) {
+    _renderTile: function(tile, key, sprites, shader, shaderVars) {
       if(!this._canvas) return;
       //var prof = Profiler.get('render').start();
       var ctx = this._ctx;
       var res = this.options.resolution;
-      var sprites = this._sprites;
       var activePixels = tile.timeCount[key];
       if(this.options.blendmode) {
         ctx.globalCompositeOperation = this.options.blendmode;
@@ -1206,11 +1242,11 @@ exports.Profiler = Profiler;
           if(c) {
            var sp = sprites[c];
            if(!sp) {
-             sp = sprites[c] = this.generateSprite(c, tile);
+             sp = sprites[c] = this.generateSprite(shader, c, _.extend({ zoom: tile.zoom }, shaderVars));
            }
-           var x = tile.x[posIdx] - (sp.width >> 1);
-           var y = tile.y[posIdx] - (sp.height >> 1);
-           ctx.drawImage(sp, x*res, 255 - y*res);
+           var x = tile.x[posIdx]*res - (sp.width >> 1);
+           var y = (256 - res - res*tile.y[posIdx]) - (sp.height >> 1);
+           ctx.drawImage(sp, x, y);
           }
         }
       }

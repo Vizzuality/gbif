@@ -61,7 +61,8 @@ function loadGBIF(callback) {
     url: config.GBIF_URL,
     resolution: 4,
     valueDataType: Float32Array,
-    continuousWorld: false
+    continuousWorld: false,
+    subdomains: '1234'
   });
 
   torqueLayer.addTo(map);
@@ -92,7 +93,7 @@ $(function() {
   // http://vizzuality.github.io/gbif/index.html?type=COUNTRY&key=ES
   // http://vizzuality.github.io/gbif/index.html?style=satellite
   if(getURLParameter("type")) {
-    config.GBIF_URL = "http://apidev.gbif.org/map/density/tile/density/tile.tcjson?key=" + getURLParameter("key") + "&x={x}&y={y}&z={z}&type=" + getURLParameter("type");
+    config.GBIF_URL = "http://apidev{s}.gbif.org/map/density/tile/density/tile.tcjson?key=" + getURLParameter("key") + "&x={x}&y={y}&z={z}&type=" + getURLParameter("type");
   }
 
   loadGBIF()
