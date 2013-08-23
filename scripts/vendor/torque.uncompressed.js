@@ -1010,7 +1010,7 @@ exports.Profiler = Profiler;
         var processingTime = Profiler.metric('jsonarray:processing time');
         try {
           processingTime.start();
-          var rows = JSON.parse(data.responseText).rows;
+          var rows = JSON.parse(data.responseText || data.response).rows;
           processed = self.proccessTile(rows, coord, zoom);
           processingTime.end();
         } catch(e) {
@@ -1018,9 +1018,7 @@ exports.Profiler = Profiler;
           console.error("problem parsing JSON on ", coord, zoom);
         }
 
-        if(processed) {
-          callback(processed);
-        }
+        callback(processed);
 
       });
     }
@@ -1113,7 +1111,7 @@ exports.Profiler = Profiler;
   var DEFAULT_CARTOCSS = [
     '#layer {',
     '  marker-fill: #662506;',
-    '  marker-width: 4;',
+    '  marker-width: 20;',
     '  [value > 1] { marker-fill: #FEE391; }',
     '  [value > 2] { marker-fill: #FEC44F; }',
     '  [value > 3] { marker-fill: #FE9929; }',
@@ -1317,6 +1315,8 @@ exports.Profiler = Profiler;
           // by-pass the style generation for improving performance
           color = this._shader['polygon-fill']({ value: value }, { zoom: 0 });
           ctx.fillStyle = color;
+          //TODO: each function should have a default value for each 
+          //property defined in the cartocss
           alpha = polygon_alpha({ value: value }, { zoom: 0 });
           if(alpha === null) {
             alpha = 1.0;
@@ -1877,6 +1877,180 @@ CanvasLayer.prototype.scheduleUpdate = function() {
   }
 };
 }
+/*
+ ====================
+ canvas setup for drawing tiles
+ ====================
+ */
+
+function CanvasTileLayer(canvas_setup, render) {
+  this.tileSize = new google.maps.Size(256, 256);
+  this.maxZoom = 19;
+  this.name = "Tile #s";
+  this.alt = "Canvas tile layer";
+  this.tiles = {};
+  this.canvas_setup = canvas_setup;
+  this.render = render;
+  if (!render) {
+      this.render = canvas_setup;
+  }
+}
+
+
+// create a tile with a canvas element
+CanvasTileLayer.prototype.create_tile_canvas = function (coord, zoom, ownerDocument) {
+
+  // create canvas and reset style
+  var canvas = ownerDocument.createElement('canvas');
+  var hit_canvas = ownerDocument.createElement('canvas');
+  canvas.style.border = hit_canvas.style.border = "none";
+  canvas.style.margin = hit_canvas.style.margin = "0";
+  canvas.style.padding = hit_canvas.style.padding = "0";
+
+  // prepare canvas and context sizes
+  var ctx = canvas.getContext('2d');
+  ctx.width = canvas.width = this.tileSize.width;
+  ctx.height = canvas.height = this.tileSize.height;
+
+  var hit_ctx = hit_canvas.getContext('2d');
+  hit_canvas.width = hit_ctx.width = this.tileSize.width;
+  hit_canvas.height = hit_ctx.height = this.tileSize.height;
+
+  //set unique id
+  var tile_id = coord.x + '_' + coord.y + '_' + zoom;
+
+  canvas.setAttribute('id', tile_id);
+  hit_canvas.setAttribute('id', tile_id);
+
+  if (tile_id in this.tiles)
+      delete this.tiles[tile_id];
+
+  this.tiles[tile_id] = {canvas:canvas, ctx:ctx, hit_canvas:hit_canvas, hit_ctx:hit_ctx, coord:coord, zoom:zoom, primitives:null};
+
+  // custom setup
+  //if (tile_id == '19295_24654_16'){
+  if (this.canvas_setup)
+      this.canvas_setup(this.tiles[tile_id], coord, zoom);
+  //}
+  return canvas;
+
+}
+
+
+CanvasTileLayer.prototype.each = function (callback) {
+  for (var t in this.tiles) {
+      var tile = this.tiles[t];
+      callback(tile);
+  }
+}
+
+CanvasTileLayer.prototype.recreate = function () {
+  for (var t in this.tiles) {
+      var tile = this.tiles[t];
+      this.canvas_setup(tile, tile.coord, tile.zoom);
+  }
+};
+
+CanvasTileLayer.prototype.redraw_tile = function (tile) {
+  this.render(tile, tile.coord, tile.zoom);
+};
+
+CanvasTileLayer.prototype.redraw = function () {
+  for (var t in this.tiles) {
+      var tile = this.tiles[t];
+      this.render(tile, tile.coord, tile.zoom);
+  }
+};
+
+// could be called directly...
+CanvasTileLayer.prototype.getTile = function (coord, zoom, ownerDocument) {
+  return this.create_tile_canvas(coord, zoom, ownerDocument);
+};
+
+CanvasTileLayer.prototype.releaseTile = function (tile) {
+  var id = tile.getAttribute('id');
+  delete this.tiles[id];
+};
+(function(exports) {
+
+
+function GMapsTiledTorqueLayer(options) {
+  this.options = _.extend({}, options);
+  CanvasTileLayer.call(this, this._loadTile.bind(this), this.drawTile.bind(this));
+  this.initialize(options);
+}
+
+GMapsTiledTorqueLayer.prototype = _.extend({}, CanvasTileLayer.prototype, {
+
+  providers: {
+    'sql_api': torque.providers.json,
+    'url_template': torque.providers.JsonArray
+  },
+
+  renderers: {
+    'point': torque.renderer.Point,
+    'pixel': torque.renderer.Rectangle
+  },
+
+  initialize: function(options) {
+    var self = this;
+    this.key = 0;
+
+    this.options.renderer = this.options.renderer || 'pixel';
+
+    this.provider = new this.providers[this.options.provider](options);
+    this.renderer = new this.renderers[this.options.renderer](null, options);
+
+  },
+
+  _tileLoaded: function(tile, tileData) {
+    tile.data = tileData;
+    this.drawTile(tile);
+  },
+
+  _loadTile: function(tile, coord, zoom) {
+    var self = this;
+    var limit = 1 << zoom;
+    // wrap tile
+    var wrappedCoord = {
+      x: ((coord.x % limit) + limit) % limit,
+      y: coord.y
+    };
+
+    this.provider.getTileData(wrappedCoord, zoom, function(tileData) {
+      self._tileLoaded(tile, tileData);
+    });
+  },
+
+  drawTile: function (tile) {
+    var canvas = tile.canvas;
+    if(!tile.data) return;
+    canvas.width = canvas.width;
+
+    this.renderer.setCanvas(canvas);
+
+    var accum = this.renderer.accumulate(tile.data, this.key);
+    this.renderer.renderTileAccum(accum, 0, 0);
+  },
+
+  setKey: function(key) {
+    this.key = key;
+    this.redraw();
+  },
+
+  /**
+   * set the cartocss for the current renderer
+   */
+  setCartoCSS: function(cartocss) {
+    if (!this.renderer) throw new Error('renderer is not valid');
+    return this.renderer.setCartoCSS(cartocss);
+  }
+
+});
+
+exports.torque.GMapsTiledTorqueLayer = GMapsTiledTorqueLayer;
+
+})(typeof exports === "undefined" ? this : exports);
 /**
  * full canvas layer implementation for Leaflet
  */
