@@ -28,8 +28,6 @@ gbif.ui.view.TimelineButton = Backbone.View.extend({
 gbif.ui.model.Timeline = Backbone.Model.extend({
   defaults: {
     collapsed: true,
-    current_cat: "sp",
-    current_title: "Preserved Specimens",
     left_year: 1900,
     right_year: 2020,
     records: 0
@@ -50,7 +48,12 @@ gbif.ui.view.Timeline = Backbone.View.extend({
 
     _.bindAll(this, "_onStartDrag", "_onDrag", "_onStopDrag", "_onChangeCollapsed", "_onChangeCurrentCat", "_onHandleAdjusted");
 
+    this.cat = (this.options && this.options.cat) || config.map.cat;
+
     this.model = new gbif.ui.model.Timeline();
+
+    this.model.set("current_cat", this.cat);
+    this.model.set("current_title", cats[this.cat]['title']);
 
     // bindings
     this.model.bind("change:collapsed", this._onChangeCollapsed);
@@ -340,8 +343,6 @@ gbif.ui.view.Timeline = Backbone.View.extend({
 
     for(var i = 0; i < cat_array.length; i++) {
       if(Array.isArray(cats[this.model.get("current_cat")]['years'][cat_array[i]])) {
-        var _num = 0;
-
         for(var j = 0; j < cats[this.model.get("current_cat")]['years'][cat_array[i]].length; j++) {
           var key = cats[this.model.get("current_cat")]['years'][cat_array[i]][j];
 
@@ -362,6 +363,14 @@ gbif.ui.view.Timeline = Backbone.View.extend({
 
     this._updateLegendDesc();
     torqueLayer.setKey(key_array);
+
+    var iframeUrl = $.param(config.map);
+
+    parent.postMessage({
+      origin: window.name,
+      records: this.model.get("records"),
+      url: iframeUrl
+    }, 'http://0.0.0.0:8000');
   },
 
   _updateLegendTitle: function() {
@@ -370,8 +379,6 @@ gbif.ui.view.Timeline = Backbone.View.extend({
 
   _updateLegendDesc: function() {
     $(this.$legend_desc).text("Showing data from " + this.model.get("left_year") + " to " + this.model.get("right_year") + " (" + this.model.get("records") + " records)");
-
-    parent.postMessage({origin:window.name}, 'http://0.0.0.0:8000');
   },
 
   _enableDrag: function() {
@@ -409,7 +416,19 @@ gbif.ui.view.Timeline = Backbone.View.extend({
       item = {};
 
       item['year'] = this.years[i][1];
-      item['num'] = aggr_data[cats[this.model.get("current_cat")]['years'][this.years[i][1]]];
+
+      if(Array.isArray(cats[this.model.get("current_cat")]['years'][this.years[i][1]])) {
+        var _num = 0;
+
+        for(var j = 0; j < cats[this.model.get("current_cat")]['years'][this.years[i][1]].length; j++) {
+          _num = _num + aggr_data[cats[this.model.get("current_cat")]['years'][this.years[i][1]][j]];
+        }
+
+        item['num'] = _num;
+      } else {
+        item['num'] = aggr_data[cats[this.model.get("current_cat")]['years'][this.years[i][1]]];
+      }
+
       this.nums[i] = item['num'];
 
       this.data.push(item);

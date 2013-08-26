@@ -104,16 +104,18 @@ gbif.ui.view.TimelineTooltip = Backbone.View.extend({
   },
 
   render: function() {
+    var self = this;
+
     this.$el.append(this.template.render( this.model.toJSON() ));
     
     this.$cats = this.$el.find("ul");
 
-    this._addCat({ key: "all", title: "Everything" });
-    this._addCat({ key: "sp", title: "Preserved Specimens", selected: true });
-    this._addCat({ key: "obs", title: "Observations" });
-    this._addCat({ key: "living", title: "Living Specimens" });
-    this._addCat({ key: "fossil", title: "Fossils" });
-    this._addCat({ key: "oth", title: "Unspecified evidence" });
+    // http://vizzuality.github.io/gbif/index.html?style=satellite
+    var cat_ = getURLParameter("cat") || config.map.cat;
+
+    _.each(cats, function(cat) {
+      self._addCat({ key: cat['key'], title: cat['title'], selected: cat['key'] === cat_ });
+    });
 
     return this.$el;
   }
