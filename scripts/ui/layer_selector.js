@@ -31,7 +31,7 @@ gbif.ui.view.LayerSelector = Backbone.View.extend({
     this.layers = new gbif.ui.collection.Layers();
 
     // http://vizzuality.github.io/gbif/index.html?style=satellite
-    var layer_ = getURLParameter("style") || config.map.layer;
+    var layer_ = getURLParameter("style") || config.MAP.layer;
 
     // layers are defined in helpers.js
     _.each(layers, function(layer) {
@@ -147,7 +147,7 @@ gbif.ui.view.LayerSelector = Backbone.View.extend({
     this.close();
 
     var iframeUrl = $.param(
-      _.extend(config.map, { layer: this.selectedLayer.get("name") })
+      _.extend(config.MAP, { layer: this.selectedLayer.get("name") })
     );
 
     parent.postMessage({

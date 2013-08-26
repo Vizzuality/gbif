@@ -41,8 +41,8 @@ function loadGBIF(callback) {
 
   var lat = getURLParameter("lat"),
       lng = getURLParameter("lng"),
-      center = new L.LatLng(config.map.lat, config.map.lng),
-      zoom = config.map.zoom;
+      center = new L.LatLng(config.MAP.lat, config.MAP.lng),
+      zoom = config.MAP.zoom;
 
   // http://vizzuality.github.io/gbif/index.html?lat=39.407856289405856&lng=-0.361511299999961
   if(lat && lng) {
@@ -59,8 +59,23 @@ function loadGBIF(callback) {
     zoom: zoom
   });
 
+  map.on('moveend', function(e) {
+    var iframeUrl = $.param(
+      _.extend(config.MAP, {
+        zoom: map.getZoom(),
+        lat: map.getCenter().lat,
+        lng: map.getCenter().lng,
+      })
+    );
+
+    parent.postMessage({
+      origin: window.name,
+      url: iframeUrl
+    }, 'http://0.0.0.0:8000');
+  });
+
   // http://vizzuality.github.io/gbif/index.html?style=satellite
-  var layer = getURLParameter("style") || config.map.layer;
+  var layer = getURLParameter("style") || config.MAP.layer;
 
   var layerUrl = layers[layer]['url'];
 
@@ -75,7 +90,7 @@ function loadGBIF(callback) {
   // http://vizzuality.github.io/gbif/index.html
   // http://vizzuality.github.io/gbif/index.html?type=TAXON&key=1
   // http://vizzuality.github.io/gbif/index.html?type=COUNTRY&key=ES
-  var gbif_url = config.map.gbif_url;
+  var gbif_url = config.GBIF_URL;
 
   if(getURLParameter("type")) {
     gbif_url = "http://d30ugvnferw5sg.cloudfront.net/map/density/tile/density/tile.tcjson?key=" + getURLParameter("key") + "&x={x}&y={y}&z={z}&type=" + getURLParameter("type");
@@ -96,7 +111,7 @@ function loadGBIF(callback) {
 
   get_aggregated(function() {
     // http://vizzuality.github.io/gbif/index.html?cat=all
-    var cat = config.map.cat;
+    var cat = config.MAP.cat;
 
     if(getURLParameter("cat")) {
       cat = getURLParameter("cat");
@@ -136,12 +151,8 @@ $(function() {
   if(getURLParameter("type")) {
     //config.GBIF_URL = "http://api{s}.gbif.org/map/density/tile/density/tile.tcjson?key=" + getURLParameter("key") + "&x={x}&y={y}&z={z}&type=" + getURLParameter("type");
     config.GBIF_URL = "http://d30ugvnferw5sg.cloudfront.net/map/density/tile/density/tile.tcjson?key=" + getURLParameter("key") + "&x={x}&y={y}&z={z}&type=" + getURLParameter("type");
-    
-    
   }
 
   loadGBIF();
   setTimeout(send_profiler_stats, 12000);
 });
-
-

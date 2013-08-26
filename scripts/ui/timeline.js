@@ -48,7 +48,7 @@ gbif.ui.view.Timeline = Backbone.View.extend({
 
     _.bindAll(this, "_onStartDrag", "_onDrag", "_onStopDrag", "_onChangeCollapsed", "_onChangeCurrentCat", "_onHandleAdjusted");
 
-    this.cat = (this.options && this.options.cat) || config.map.cat;
+    this.cat = (this.options && this.options.cat) || config.MAP.cat;
 
     this.model = new gbif.ui.model.Timeline();
 
@@ -364,7 +364,7 @@ gbif.ui.view.Timeline = Backbone.View.extend({
     this._updateLegendDesc();
     torqueLayer.setKey(key_array);
 
-    var iframeUrl = $.param(config.map);
+    var iframeUrl = $.param(config.MAP);
 
     parent.postMessage({
       origin: window.name,
