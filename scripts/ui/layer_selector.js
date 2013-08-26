@@ -153,7 +153,7 @@ gbif.ui.view.LayerSelector = Backbone.View.extend({
     parent.postMessage({
       origin: window.name,
       url: iframeUrl
-    }, 'http://0.0.0.0:8000');
+    }, 'http://vizzuality.github.io');
   },
 
   open: function() {

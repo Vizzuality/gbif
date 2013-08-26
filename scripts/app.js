@@ -71,7 +71,7 @@ function loadGBIF(callback) {
     parent.postMessage({
       origin: window.name,
       url: iframeUrl
-    }, 'http://0.0.0.0:8000');
+    }, 'http://vizzuality.github.io');
   });
 
   // http://vizzuality.github.io/gbif/index.html?style=satellite
