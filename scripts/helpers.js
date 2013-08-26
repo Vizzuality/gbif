@@ -4,21 +4,6 @@ function getURLParameter(name) {
   );
 }
 
-var config = {
-  //GBIF_URL: "http://api.gbif.org/map/density/tile/density/tile.tcjson?key=1&x={x}&y={y}&z={z}&type=TAXON",
-  GBIF_URL: "http://d30ugvnferw5sg.cloudfront.net/map/density/tile/density/tile.tcjson?key=1&x={x}&y={y}&z={z}&type=TAXON",
-  GRAPH_MARGIN: 10,
-  GRAPH_H: 40,
-  GRAPH_W: 444,
-  ANALYSIS_OVERLAY_STYLE: {
-    allowIntersection: false,
-    shapeOptions: {
-      color: '#DA6D64',
-      opacity: 1
-    }
-  }
-};
-
 var layers = {
   "dark": {
     "name": "dark",
@@ -141,6 +126,7 @@ var cats = {
 };
 
 var config = {
+  GBIF_URL: "http://d30ugvnferw5sg.cloudfront.net/map/density/tile/density/tile.tcjson?key=1&x={x}&y={y}&z={z}&type=TAXON",
   GRAPH_MARGIN: 10,
   GRAPH_H: 40,
   GRAPH_W: 444,
@@ -151,8 +137,7 @@ var config = {
       opacity: 1
     }
   },
-  map: {
-    gbif_url: "http://d30ugvnferw5sg.cloudfront.net/map/density/tile/density/tile.tcjson?key=1&x={x}&y={y}&z={z}&type=TAXON",
+  MAP: {
     layer: "dark",
     cat: "sp",
     lat: 36.60670888641815,
