@@ -547,9 +547,11 @@ gbif.ui.view.Timeline = Backbone.View.extend({
       this.$el.find(".legend svg").show();
       this.$el.find(".slider").show();
 
-      $(this.$el).animate({
-        "height": 150
-      }, 150).removeClass("collapsed");
+      if(!this.model.get("collapsed")) {
+        $(this.$el).animate({
+          "height": 150
+        }, 150).removeClass("collapsed");
+      }
 
       var left_handle_x  = parseInt(_.keys(this.years)[0], 10);
       var right_handle_x = parseInt(_.keys(this.years)[_.size(this.years)-1], 10) + 3;
@@ -559,7 +561,6 @@ gbif.ui.view.Timeline = Backbone.View.extend({
 
       setTimeout(function() { self._adjustBothHandles(); }, 250);
 
-      this._updateLegendTitle();
       this._updateGraph();
     } else {
       this.$el.find(".legend svg").hide();
@@ -569,8 +570,6 @@ gbif.ui.view.Timeline = Backbone.View.extend({
         "height": 44
       }, 150).addClass("collapsed");
 
-      this._updateLegendTitle();
-
       var key = cats[this.model.get("current_cat")]['key'];
 
       this.model.set("records", aggr_data[key]);
@@ -579,6 +578,8 @@ gbif.ui.view.Timeline = Backbone.View.extend({
 
       torqueLayer.setKey(key);
     }
+
+    this._updateLegendTitle();
   },
 
   updateCat: function(key, title) {
