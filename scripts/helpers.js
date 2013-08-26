@@ -34,7 +34,7 @@ var layers = {
 
 var cats = {
   "sp": {
-    "key": "sp",
+    "name": "sp",
     "title": "Preserved Specimens",
     "years": {
       "no":   0,
@@ -54,7 +54,7 @@ var cats = {
     }
   },
   "obs": {
-    "key": "obs",
+    "name": "obs",
     "title": "Observations",
     "years": {
       "no":   14,
@@ -74,7 +74,7 @@ var cats = {
     }
   },
   "oth": {
-    "key": "oth",
+    "name": "oth",
     "title": "Other types",
     "years": {
       "no":   30,
@@ -94,17 +94,17 @@ var cats = {
     }
   },
   "living": {
-    "key": "living",
+    "name": "living",
     "title": "Living Specimens",
     "key": 28
   },
   "fossil": {
-    "key": "fossil",
+    "name": "fossil",
     "title": "Fossils",
     "key": 29
   },
   "all": {
-    "key": "all",
+    "name": "all",
     "title": "All types",
     "years": {
       "no":   [0, 14, 30, 28, 29],

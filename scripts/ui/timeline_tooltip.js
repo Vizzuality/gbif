@@ -114,7 +114,7 @@ gbif.ui.view.TimelineTooltip = Backbone.View.extend({
     var cat_ = getURLParameter("cat") || config.MAP.cat;
 
     _.each(cats, function(cat) {
-      self._addCat({ key: cat['key'], title: cat['title'], selected: cat['key'] === cat_ });
+      self._addCat({ key: cat['name'], title: cat['title'], selected: cat['name'] === cat_ });
     });
 
     return this.$el;
