@@ -102,7 +102,10 @@ $(function() {
   // http://vizzuality.github.io/gbif/index.html?type=COUNTRY&key=ES
   // http://vizzuality.github.io/gbif/index.html?style=satellite
   if(getURLParameter("type")) {
-    config.GBIF_URL = "http://apidev{s}.gbif.org/map/density/tile/density/tile.tcjson?key=" + getURLParameter("key") + "&x={x}&y={y}&z={z}&type=" + getURLParameter("type");
+    //config.GBIF_URL = "http://api{s}.gbif.org/map/density/tile/density/tile.tcjson?key=" + getURLParameter("key") + "&x={x}&y={y}&z={z}&type=" + getURLParameter("type");
+    config.GBIF_URL = "http://d30ugvnferw5sg.cloudfront.net/map/density/tile/density/tile.tcjson?key=" + getURLParameter("key") + "&x={x}&y={y}&z={z}&type=" + getURLParameter("type");
+    
+    
   }
 
   loadGBIF();

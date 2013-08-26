@@ -5,7 +5,8 @@ function getURLParameter(name) {
 }
 
 var config = {
-  GBIF_URL: "http://apidev.gbif.org/map/density/tile/density/tile.tcjson?key=1&x={x}&y={y}&z={z}&type=TAXON",
+  //GBIF_URL: "http://api.gbif.org/map/density/tile/density/tile.tcjson?key=1&x={x}&y={y}&z={z}&type=TAXON",
+  GBIF_URL: "http://d30ugvnferw5sg.cloudfront.net/map/density/tile/density/tile.tcjson?key=1&x={x}&y={y}&z={z}&type=TAXON",
   GRAPH_MARGIN: 10,
   GRAPH_H: 40,
   GRAPH_W: 444,
