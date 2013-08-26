@@ -2,9 +2,7 @@
 @import "compass/css3";
 
 @import "button-icons/*.png";
-@include all-button-icons-sprites;
 @import "timeline-icons/*.png";
-@include all-timeline-icons-sprites;
 
 $step_x: 37px;
 
@@ -98,16 +96,14 @@ strong { font-weight: bold; }
     left: -11px;
     height: 22px;
     width: 22px;
-    @extend .button-icons-analysis;
+    @include button-icons-sprite(analysis);
     @include transition(all, .15s);
 
     &.active { @include rotate(45deg); }
   }
 }
 
-.fullscreen {
-  @extend .button-icons-fullscreen;
-}
+.fullscreen { @include button-icons-sprite(fullscreen);}
 
 .leaflet-left .leaflet-control-zoom {
   margin: 10px 0 0 10px;
@@ -237,12 +233,12 @@ strong { font-weight: bold; }
     border-bottom: 1px solid #e5e5e5;
     border-right: 1px solid #e5e5e5;
     @include border-top-left-radius(5px);
-    @extend .timeline-icons-hamburger;
+    @include timeline-icons-sprite(hamburger);
 
     &:active {
       border-color: #89C0E5;
       background-color: #99D6FF;
-      @extend .timeline-icons-hamburger-active;
+      @include timeline-icons-sprite(hamburger_active);
     }
   }
 }
@@ -266,7 +262,8 @@ strong { font-weight: bold; }
 
 .visible_years {
   height: 4px;
-  @extend .timeline-icons-noyear;
+  background-color: #ddd;
+  @include timeline-icons-sprite(noyear);
   @include border-radius(2px);
 
   .noyear,
@@ -464,14 +461,14 @@ strong { font-weight: bold; }
     height: 9px;
     width: 9px;
     line-height: 40px;
-    @extend .timeline-icons-menu;
+    @include timeline-icons-sprite(menu);
   }
 
   &.selected,
   &:hover {
     color: #666;
 
-    i { @extend .timeline-icons-menu_selected; }
+    i { @include timeline-icons-sprite(menu_selected); }
   }
 }
 
