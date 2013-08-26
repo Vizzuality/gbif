@@ -1,5 +1,7 @@
 (function(exports) {
 
+  exports.torque = exports.torque || {};
+
   var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
 
   var cancelAnimationFrame = window.requestAnimationFrame || window.mozCancelAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
@@ -18,10 +20,15 @@
     this._tick = this._tick.bind(this);
     this._t0 = +new Date();
     this.callback = callback;
-    this._animFrame = null;
     this._time = 0.0;
+    _.defaults(this.options, {
+      animationDelay: 0,
+      maxDelta: 0.2,
+      loop: true
+    });
+    
 
-    this.domain = invLinear(this.options.animationDelay, this.options.animationDelay, this.options.animationDuration);
+    this.domain = invLinear(this.options.animationDelay, this.options.animationDelay + this.options.animationDuration);
     this.range = linear(0, this.options.steps);
   }
 
@@ -31,12 +38,14 @@
       return Math.max(Math.min(t, b), a);
     };
   }
+
   function invLinear(a, b) {
     var c = clamp(0, 1.0);
     return function(t) {
       return c((t - a)/(b - a));
     };
   }
+
   function linear(a, b) {
     var c = clamp(a, b);
     return function(t) {
@@ -49,24 +58,50 @@
 
     start: function() {
       this.running = true;
-      this._animFrame = requestAnimationFrame(this._tick);
+      requestAnimationFrame(this._tick);
     },
 
     stop: function() {
-      this.running = true;
-      cancelAnimationFrame(this._animFrame);
+      this.pause();
+      this._time = 0;
+      var t = this.range(this.domain(this._time));
+      this.callback(t);
+    },
+
+    toggle: function() {
+      if (this.running) {
+        this.pause()
+      } else {
+        this.start()
+      }
+    },
+
+    pause: function() {
+      this.running = false;
+      cancelAnimationFrame(this._tick);
     },
 
     _tick: function() {
       var t1 = +new Date();
       var delta = (t1 - this._t0)*0.001;
+      // if delta is really big means the tab lost the focus
+      // at some point, so limit delta change
+      delta = Math.min(this.options.maxDelta, delta)
       this._t0 = t1;
       this._time += delta;
-      this.callback(this.range(this.domain(this._time)));
-      this._animFrame = requestAnimationFrame(this._tick);
+      var t = this.range(this.domain(this._time));
+      this.callback(t);
+      if(t >= this.options.steps) {
+        this._time = 0;
+      }
+      if(this.running) {
+        requestAnimationFrame(this._tick);
+      }
     }
 
   };
+
+  exports.torque.Animator = Animator;
 
 
 
@@ -502,6 +537,7 @@ Metric.prototype = {
   //
   start: function() {
     this.t0 = +new Date();
+    return this;
   },
 
   // elapsed time since start was called
@@ -1227,7 +1263,7 @@ exports.Profiler = Profiler;
     //
     _renderTile: function(tile, key, sprites, shader, shaderVars) {
       if(!this._canvas) return;
-      //var prof = Profiler.get('render').start();
+      var prof = Profiler.metric('PointRenderer:renderTile').start();
       var ctx = this._ctx;
       var res = this.options.resolution;
       var activePixels = tile.timeCount[key];
@@ -1250,7 +1286,7 @@ exports.Profiler = Profiler;
           }
         }
       }
-      //prof.end();
+      prof.end();
     }
   };
 
@@ -1306,6 +1342,7 @@ exports.Profiler = Profiler;
     },
 
     accumulate: function(tile, keys) {
+      var prof = Profiler.metric('RectangleRender:accumulate').start();
       var x, y, posIdx, p, k, key, activePixels, pixelIndex;
       var res = this.options.resolution;
       var s = 256/res;
@@ -1328,10 +1365,13 @@ exports.Profiler = Profiler;
           }
         }
       }
+
+      prof.end();
       return accum;
     },
 
     renderTileAccum: function(accum, px, py) {
+      var prof = Profiler.metric('RectangleRender:renderTileAccum').start();
       var color, x, y, alpha;
       var res = this.options.resolution;
       var ctx = this._ctx;
@@ -1361,6 +1401,7 @@ exports.Profiler = Profiler;
           ctx.fillRect(x * res, 256 - res - y * res, res, res);
         }
       }
+      prof.end();
     },
 
     //
@@ -2336,6 +2377,7 @@ L.Mixin.TileLoader = {
  */
 L.TorqueLayer = L.CanvasLayer.extend({
 
+
   providers: {
     'sql_api': torque.providers.json,
     'url_template': torque.providers.jsonarray
@@ -2350,6 +2392,18 @@ L.TorqueLayer = L.CanvasLayer.extend({
     var self = this;
     options.tileLoader = true;
     this.key = 0;
+
+    this.animator = new torque.Animator(function(time) {
+      var k = time | 0;
+      if(self.key !== k) {
+        self.setKey(k);
+      }
+    }, options);
+
+    this.play = this.animator.start.bind(this.animator);
+    this.stop = this.animator.stop.bind(this.animator);
+    this.pause = this.animator.pause.bind(this.animator);
+    this.toggle = this.animator.toggle.bind(this.animator);
 
     L.CanvasLayer.prototype.initialize.call(this, options);
 
