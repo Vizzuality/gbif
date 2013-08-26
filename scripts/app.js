@@ -39,26 +39,51 @@ function loadGBIF(callback) {
   GOD = new gbif.ui.view.GOD();
   window.GOD = GOD;
 
+  var lat = getURLParameter("lat"),
+      lng = getURLParameter("lng"),
+      center = new L.LatLng(config.map.lat, config.map.lng),
+      zoom = config.map.zoom;
+
+  // http://vizzuality.github.io/gbif/index.html?lat=39.407856289405856&lng=-0.361511299999961
+  if(lat && lng) {
+    center = new L.LatLng(getURLParameter("lat"), getURLParameter("lng"));
+  }
+
+  // http://vizzuality.github.io/gbif/index.html?zoom=11
+  if(getURLParameter("zoom")) {
+    zoom = getURLParameter("zoom");
+  }
+
   map = new L.Map('map', {
-    center: [36.60670888641815, 38.627929687],
-    zoom: 2
+    center: center,
+    zoom: zoom
   });
 
-  config.LAYER_STYLE = getURLParameter("style") || "dark";
+  // http://vizzuality.github.io/gbif/index.html?style=satellite
+  var layer = getURLParameter("style") || config.map.layer;
 
-  var layerUrl = layers[config.LAYER_STYLE]['url'];
+  var layerUrl = layers[layer]['url'];
 
   var layerOptions = {
-    attribution: layers[config.LAYER_STYLE]['attribution']
+    attribution: layers[layer]['attribution']
   }
 
   baseMap = new L.tileLayer(layerUrl, layerOptions);
 
   baseMap.addTo(map);
 
+  // http://vizzuality.github.io/gbif/index.html
+  // http://vizzuality.github.io/gbif/index.html?type=TAXON&key=1
+  // http://vizzuality.github.io/gbif/index.html?type=COUNTRY&key=ES
+  var gbif_url = config.map.gbif_url;
+
+  if(getURLParameter("type")) {
+    gbif_url = "http://d30ugvnferw5sg.cloudfront.net/map/density/tile/density/tile.tcjson?key=" + getURLParameter("key") + "&x={x}&y={y}&z={z}&type=" + getURLParameter("type");
+  }
+
   torqueLayer = new L.TiledTorqueLayer({
     provider: 'url_template',
-    url: config.GBIF_URL,
+    url: gbif_url,
     resolution: 4,
     valueDataType: Float32Array,
     continuousWorld: false,
@@ -66,13 +91,20 @@ function loadGBIF(callback) {
   });
 
   torqueLayer.addTo(map);
-  torqueLayer.setKey([2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]);
   torqueLayer.setZIndex(1000);
   torqueLayer.renderer.setCartoCSS(TORQUE_LAYER_CARTOCSS);
 
   get_aggregated(function() {
+    // http://vizzuality.github.io/gbif/index.html?cat=all
+    var cat = config.map.cat;
+
+    if(getURLParameter("cat")) {
+      cat = getURLParameter("cat");
+    }
+
     timeline = new gbif.ui.view.Timeline({
-      container: $("#wrapper")
+      container: $("#wrapper"),
+      cat: cat
     });
 
     timeline.timeline_tooltip.addHandler(".hamburger a");

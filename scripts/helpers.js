@@ -49,6 +49,7 @@ var layers = {
 
 var cats = {
   "sp": {
+    "key": "sp",
     "title": "Preserved Specimens",
     "years": {
       "no":   0,
@@ -68,6 +69,7 @@ var cats = {
     }
   },
   "obs": {
+    "key": "obs",
     "title": "Observations",
     "years": {
       "no":   14,
@@ -87,6 +89,7 @@ var cats = {
     }
   },
   "oth": {
+    "key": "oth",
     "title": "Other types",
     "years": {
       "no":   30,
@@ -106,14 +109,17 @@ var cats = {
     }
   },
   "living": {
+    "key": "living",
     "title": "Living Specimens",
     "key": 28
   },
   "fossil": {
+    "key": "fossil",
     "title": "Fossils",
     "key": 29
   },
   "all": {
+    "key": "all",
     "title": "All types",
     "years": {
       "no":   [0, 14, 30, 28, 29],
@@ -131,5 +137,26 @@ var cats = {
       "2000": [12, 26, 42],
       "2010": [13, 27, 43]
     }
+  }
+};
+
+var config = {
+  GRAPH_MARGIN: 10,
+  GRAPH_H: 40,
+  GRAPH_W: 444,
+  ANALYSIS_OVERLAY_STYLE: {
+    allowIntersection: false,
+    shapeOptions: {
+      color: '#DA6D64',
+      opacity: 1
+    }
+  },
+  map: {
+    gbif_url: "http://d30ugvnferw5sg.cloudfront.net/map/density/tile/density/tile.tcjson?key=1&x={x}&y={y}&z={z}&type=TAXON",
+    layer: "dark",
+    cat: "sp",
+    lat: 36.60670888641815,
+    lng: 38.627929687,
+    zoom: 2
   }
 };

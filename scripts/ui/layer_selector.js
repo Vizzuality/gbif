@@ -30,9 +30,12 @@ gbif.ui.view.LayerSelector = Backbone.View.extend({
 
     this.layers = new gbif.ui.collection.Layers();
 
+    // http://vizzuality.github.io/gbif/index.html?style=satellite
+    var layer_ = getURLParameter("style") || config.map.layer;
+
     // layers are defined in helpers.js
     _.each(layers, function(layer) {
-      self.layers.add(new gbif.ui.model.Layer(layer['name'] === config.LAYER_STYLE ? _.extend(layer, { selected: true }) : layer));
+      self.layers.add(new gbif.ui.model.Layer(layer['name'] === layer_ ? _.extend(layer, { selected: true }) : layer));
     });
 
     // this.layers.bind("change", function() { debugger; });
@@ -142,6 +145,15 @@ gbif.ui.view.LayerSelector = Backbone.View.extend({
     this._addSelectedLayer();
 
     this.close();
+
+    var iframeUrl = $.param(
+      _.extend(config.map, { layer: this.selectedLayer.get("name") })
+    );
+
+    parent.postMessage({
+      origin: window.name,
+      url: iframeUrl
+    }, 'http://0.0.0.0:8000');
   },
 
   open: function() {
