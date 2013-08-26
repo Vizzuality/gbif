@@ -95,5 +95,5 @@ $(function() {
     config.GBIF_URL = "http://apidev.gbif.org/map/density/tile/density/tile.tcjson?key=" + getURLParameter("key") + "&x={x}&y={y}&z={z}&type=" + getURLParameter("type");
   }
 
-  loadGBIF()
+  loadGBIF();
 });

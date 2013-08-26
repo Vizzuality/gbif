@@ -370,6 +370,8 @@ gbif.ui.view.Timeline = Backbone.View.extend({
 
   _updateLegendDesc: function() {
     $(this.$legend_desc).text("Showing data from " + this.model.get("left_year") + " to " + this.model.get("right_year") + " (" + this.model.get("records") + " records)");
+
+    parent.postMessage({origin:window.name}, 'http://0.0.0.0:8000');
   },
 
   _enableDrag: function() {
