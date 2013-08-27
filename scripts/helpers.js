@@ -139,7 +139,7 @@ var config = {
   },
   MAP: {
     type: "TAXON",
-    type_key: 1,
+    key: 1,
     layer: "dark",
     cat: "sp",
     lat: 36.60670888641815,
