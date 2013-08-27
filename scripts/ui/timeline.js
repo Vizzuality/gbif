@@ -444,11 +444,6 @@ gbif.ui.view.Timeline = Backbone.View.extend({
                     .range([config.GRAPH_H, config.GRAPH_MARGIN])
                     .domain(y_extent);
 
-    svg = d3.select(".legend")
-      .append("svg")
-      .attr("width", config.GRAPH_W)
-      .attr("height", config.GRAPH_H+2*config.GRAPH_MARGIN);
-
     svg.selectAll("rect")
       .data(this.data)
       .enter()
@@ -538,10 +533,12 @@ gbif.ui.view.Timeline = Backbone.View.extend({
 
     this.options.container.append(this.$el);
 
-    var svg = [];
+    svg = d3.select(".legend")
+      .append("svg")
+      .attr("width", config.GRAPH_W)
+      .attr("height", config.GRAPH_H+2*config.GRAPH_MARGIN);
 
     this._storeDatePositions();
-    this._drawGraph();
     this._enableDrag();
 
     var left_handle_x  = parseInt(_.keys(this.years)[0], 10);
@@ -550,7 +547,23 @@ gbif.ui.view.Timeline = Backbone.View.extend({
     this.model.set("left_handle",  left_handle_x+(this.grid_x * 2));
     this.model.set("right_handle", right_handle_x*this.grid_x);
 
-    setTimeout(function() { self._adjustHandlePosition(); }, 250);
+    if(typeof cats[this.model.get("current_cat")]['years'] != 'undefined') {
+      this._drawGraph();
+      setTimeout(function() { self._adjustHandlePosition(); }, 250);
+    } else {
+      this.$el.find(".legend svg").hide();
+      this.$el.find(".slider").hide();
+
+      $(this.$el).animate({
+        "height": 44
+      }, 150).addClass("collapsed");
+
+      var key = cats[this.model.get("current_cat")]['key'];
+
+      this.model.set("records", aggr_data[key]);
+
+      $(this.$legend_desc).text("Showing all records (" + this.model.get("records") + ")");
+    }
   },
 
   _onClickHamburger: function(e) {
