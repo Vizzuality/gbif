@@ -46,12 +46,17 @@ function loadGBIF(callback) {
 
   // http://vizzuality.github.io/gbif/index.html?lat=39.407856289405856&lng=-0.361511299999961
   if(lat && lng) {
-    center = new L.LatLng(getURLParameter("lat"), getURLParameter("lng"));
+    center = new L.LatLng(lat, lng);
+
+    config.MAP.lat = lat;
+    config.MAP.lng = lng;
   }
 
   // http://vizzuality.github.io/gbif/index.html?zoom=11
   if(getURLParameter("zoom")) {
     zoom = getURLParameter("zoom");
+
+    config.MAP.zoom = zoom;
   }
 
   map = new L.Map('map', {
@@ -75,7 +80,13 @@ function loadGBIF(callback) {
   });
 
   // http://vizzuality.github.io/gbif/index.html?style=satellite
-  var layer = getURLParameter("style") || config.MAP.layer;
+  var layer = config.MAP.layer;
+
+  if(getURLParameter("style")) {
+    layer = getURLParameter("style");
+
+    config.MAP.layer = layer;
+  }
 
   var layerUrl = layers[layer]['url'];
 
@@ -87,18 +98,23 @@ function loadGBIF(callback) {
 
   baseMap.addTo(map);
 
-  // http://vizzuality.github.io/gbif/index.html
   // http://vizzuality.github.io/gbif/index.html?type=TAXON&key=1
   // http://vizzuality.github.io/gbif/index.html?type=COUNTRY&key=ES
-  var gbif_url = config.GBIF_URL;
+  var type = config.MAP.type,
+      type_key = config.MAP.type_key;
 
   if(getURLParameter("type")) {
-    gbif_url = "http://d30ugvnferw5sg.cloudfront.net/map/density/tile/density/tile.tcjson?key=" + getURLParameter("key") + "&x={x}&y={y}&z={z}&type=" + getURLParameter("type");
+    type = getURLParameter("type");
+    type_key = getURLParameter("key");
+
+    config.MAP.type = type;
+    config.MAP.type_key = type_key;
+    config.GBIF_URL = "http://d30ugvnferw5sg.cloudfront.net/map/density/tile/density/tile.tcjson?key=" + type_key + "&x={x}&y={y}&z={z}&type=" + type;
   }
 
   torqueLayer = new L.TiledTorqueLayer({
     provider: 'url_template',
-    url: gbif_url,
+    url: config.GBIF_URL,
     resolution: 4,
     valueDataType: Float32Array,
     continuousWorld: false,
@@ -144,18 +160,7 @@ function send_profiler_stats() {
 }
 
 $(function() {
-  // http://vizzuality.github.io/gbif/index.html?type=TAXON&key=1
-  // http://vizzuality.github.io/gbif/index.html?type=COUNTRY&key=ES
-  var type = config.MAP.type,
-      type_key = config.MAP.type_key;
-
-  if(getURLParameter("type")) {
-    type = getURLParameter("type");
-    type_key = getURLParameter("key");
-  }
-
-  config.GBIF_URL = "http://d30ugvnferw5sg.cloudfront.net/map/density/tile/density/tile.tcjson?key=" + type_key + "&x={x}&y={y}&z={z}&type=" + type;
-
   loadGBIF();
+
   setTimeout(send_profiler_stats, 12000);
 });
