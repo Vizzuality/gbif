@@ -65,12 +65,12 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
 
 /* line 50, button-icons/*.png */
 .button-icons-sprite, .analysis i, .fullscreen {
-  background: url('/images/button-icons-s238bcde1cc.png') no-repeat;
+  background: url('/gbif/images/button-icons-s238bcde1cc.png') no-repeat;
 }
 
 /* line 74, timeline-icons/*.png */
 .timeline-icons-sprite, .hamburger a, .hamburger a:active, .visible_years, .timeline_tooltip_link i, .timeline_tooltip_link.selected i, .timeline_tooltip_link:hover i {
-  background: url('/images/timeline-icons-s0db679dd3e.png') no-repeat;
+  background: url('/gbif/images/timeline-icons-s0db679dd3e.png') no-repeat;
 }
 
 /* line 9, ../sass/main.scss */
