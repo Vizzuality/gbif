@@ -101,15 +101,15 @@ function loadGBIF(callback) {
   // http://vizzuality.github.io/gbif/index.html?type=TAXON&key=1
   // http://vizzuality.github.io/gbif/index.html?type=COUNTRY&key=ES
   var type = config.MAP.type,
-      type_key = config.MAP.type_key;
+      key = config.MAP.key;
 
   if(getURLParameter("type")) {
     type = getURLParameter("type");
-    type_key = getURLParameter("key");
+    key = getURLParameter("key");
 
     config.MAP.type = type;
-    config.MAP.type_key = type_key;
-    config.GBIF_URL = "http://d30ugvnferw5sg.cloudfront.net/map/density/tile/density/tile.tcjson?key=" + type_key + "&x={x}&y={y}&z={z}&type=" + type;
+    config.MAP.key = key;
+    config.GBIF_URL = "http://d30ugvnferw5sg.cloudfront.net/map/density/tile/density/tile.tcjson?key=" + key + "&x={x}&y={y}&z={z}&type=" + type;
   }
 
   torqueLayer = new L.TiledTorqueLayer({
