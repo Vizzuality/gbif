@@ -34,8 +34,8 @@ When modifying the state of the map (latlng, zoom, style, records) an object wil
 
 ```
 {
-  origin: "iframe1",
+  origin: "iframe8",
   records: 19578339,
-  url: "layer=dark&cat=sp&lat=36.60670888641815&lng=38.627929687&zoom=2"
+  url: "type=TAXON&key=1&layer=dark&cat=sp&lat=39.407856289405856&lng=-0.361511299999961&zoom=11"
 }
 ```
