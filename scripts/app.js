@@ -6,6 +6,7 @@ var loaded        = false,
     timeline      = {},
     torqueLayer   = {},
     drawnItems    = {},
+    svg           = [],
     aggr_data     = null,
     total_data    = 0;
 
