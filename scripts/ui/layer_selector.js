@@ -82,6 +82,16 @@ gbif.ui.view.LayerSelector = Backbone.View.extend({
     });
 
     this.$selected_layer.empty();
+    
+    // alert the overlays of the style change event
+ 		//if (typeof torqueLayer != 'undefined') {
+		  // there are no CartoCSS palettes defined (yet)
+		  //torqueLayer.setCartoCss(...);
+  	//}	  
+	  if (typeof tileLayer != 'undefined') {
+		  tileLayer.setStyle(layers[this.selectedLayer.get("name")]['png-render-style']);
+  	}
+  	
 
     this.selectedLayer.set("thumbnail", this._getThumbnail(this.selectedLayer));
     this.$selected_layer.append(template.render( this.selectedLayer.toJSON() ));
