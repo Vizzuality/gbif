@@ -362,7 +362,14 @@ gbif.ui.view.Timeline = Backbone.View.extend({
     this.model.set("records", nums_array);
 
     this._updateLegendDesc();
-    torqueLayer.setKey(key_array);
+		// trigger callbacks on the layers (torque or PNG depending on the config)
+		if (typeof torqueLayer != 'undefined') {
+		  torqueLayer.setKey(key_array);
+		} 
+		if (typeof tileLayer != 'undefined') {
+		  tileLayer.setKey(key_array);
+		}
+    
 
     var iframeUrl = $.param(config.MAP);
 
@@ -607,8 +614,14 @@ gbif.ui.view.Timeline = Backbone.View.extend({
       this.model.set("records", aggr_data[key]);
 
       $(this.$legend_desc).text("Showing all records (" + this.model.get("records") + ")");
-
-      torqueLayer.setKey(key);
+			
+			// trigger callbacks on the layers (torque or PNG depending on the config)
+ 		  if (typeof torqueLayer != 'undefined') {
+		    torqueLayer.setKey(key);
+  		} 
+	  	if (typeof tileLayer != 'undefined') {
+		    tileLayer.setKey(key);
+  		}    
     }
 
     this._updateLegendTitle();
