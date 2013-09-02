@@ -15,9 +15,10 @@ var loaded        = false,
     total_data    = 0;
 
 function get_aggregated(callback) {
-	// TODO  
-	aggr_data = {0: 3340202, 1: 407366, 2: 305994, 3: 423038, 4: 500602, 5: 786371, 6: 609446, 7: 1168363, 8: 2174726, 9: 2463996, 10: 2657818, 11: 4290073, 12: 3796801, 13: 401111, 14: 4853059, 15: 21310, 16: 50638, 17: 19001, 18: 26742, 19: 68990, 20: 88266, 21: 541867, 22: 1704210, 23: 3090049, 24: 11088561, 25: 21305561, 26: 71482676, 27: 36807058, 28: 86355, 29: 710645, 30: 1683648, 31: 139465, 32: 123957, 33: 154907, 34: 240863, 35: 318072, 36: 275817, 37: 455973, 38: 1206157, 39: 4004142, 40: 5745649, 41: 9113038, 42: 27537493, 43: 13559603};
-	callback();
+  statsLayer.provider.getTile({ x: 0, y: 0 }, 0, function(data) {
+    aggr_data = statsLayer.provider.aggregateByKey(data.rows);
+    callback();
+  });
 }
 
 function loadGBIF(callback) {
@@ -102,12 +103,20 @@ function loadGBIF(callback) {
     config.MAP.type = type;
     config.MAP.key = key;
     config.GBIF_URL = "http://apidev.gbif.org/map/density/tile/density/tile.png?key=" + key + "&x={x}&y={y}&z={z}&type=" + type;
+    config.GBIF_STATS_URL = "http://apidev.gbif.org/map/density/tile/density/tile.tcjson?key=" + key + "&x={x}&y={y}&z={z}&type=" + type;
   }
 
-	// TODO other stuff
+  // we use torque only to read the JSON tile for the histogram metrics
+  statsLayer = new L.TiledTorqueLayer({
+    provider: 'url_template',
+    url: config.GBIF_STATS_URL,
+    resolution: 1,
+    valueDataType: Float32Array,
+    continuousWorld: false
+  });
+
   tileLayer = new L.GBIFLayer(config.GBIF_URL, {});
   tileLayer.addTo(map);
-  //overlayLayer.setZIndex(1000);
 
   get_aggregated(function() {
     // http://vizzuality.github.io/gbif/index.html?cat=all
