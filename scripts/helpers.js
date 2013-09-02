@@ -5,30 +5,41 @@ function getURLParameter(name) {
 }
 
 var layers = {
+  "classic" : {
+    "name": "classic",
+    "url": "http://{s}.tiles.mapbox.com/v3/timrobertson100.map-x2mlizjd/{z}/{x}/{y}.png",
+    "attribution": "Mapbox, <a href='http://www.openstreetmap.org/copyright' target='_blank'>OpenStreetMap contributors</a>",
+    "png-render-style": "palette=yellows_reds",
+  },
   "dark": {
     "name": "dark",
     "url": "http://{s}.tiles.mapbox.com/v3/timrobertson100.map-c9rscfra/{z}/{x}/{y}.png",
-    "attribution": "Mapbox, <a href='http://www.openstreetmap.org/copyright' target='_blank'>OpenStreetMap and its contributors</a>"  
+    "attribution": "Mapbox, <a href='http://www.openstreetmap.org/copyright' target='_blank'>OpenStreetMap contributors</a>",
+    "png-render-style": "saturation=true"
   },
   "ocean": {
     "name": "ocean",
     "url": "http://server.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer/tile/{z}/{y}/{x}.png",
-    "attribution": "Esri, DeLorme, FAO, USGS, NOAA, GEBCO, IHO-IOC GEBCO, NGS, NIWA"
+    "attribution": "Esri, DeLorme, FAO, USGS, NOAA, GEBCO, IHO-IOC GEBCO, NGS, NIWA",
+    "png-render-style": "palette=yellows_reds&resolution=4"
   },
   "satellite": {
     "name": "satellite",
     "url": "http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}.png",
-    "attribution": "Esri, DeLorme, FAO, NOAA, DigitalGlobe, GeoEye, i-cubed, USDA, USGS, AEX, Getmapping, Aerogrid, IGN, IGP, swisstopo, and the GIS User Community"
+    "attribution": "Esri, DeLorme, FAO, NOAA, DigitalGlobe, GeoEye, i-cubed, USDA, USGS, AEX, Getmapping, Aerogrid, IGN, IGP, swisstopo, and the GIS User Community",
+    "png-render-style": "palette=yellows_reds&resolution=4"
   },
   "light": {
     "name": "light",
     "url": "http://{s}.tiles.mapbox.com/v3/timrobertson100.map-s9fg80cf/{z}/{x}/{y}.png",
-    "attribution": "Mapbox, <a href='http://www.openstreetmap.org/copyright' target='_blank'>OpenStreetMap and its contributors</a>"  
+    "attribution": "Mapbox, <a href='http://www.openstreetmap.org/copyright' target='_blank'>OpenStreetMap contributors</a>",
+    "png-render-style": "colors=%2C%2C%23000000FF"
   },
   "grey-blue": {
     "name": "grey-blue",
     "url": "http://2.maps.nlp.nokia.com/maptile/2.1/maptile/newest/normal.day.grey/{z}/{x}/{y}/256/png8?app_id=_peU-uCkp-j8ovkzFGNU&app_code=gBoUkAMoxoqIWfxWA5DuMQ",
-    "attribution": "Nokia"
+    "attribution": "Nokia",
+    "png-render-style": "palette=yellows_reds&resolution=4"
   }
 }
 
@@ -75,7 +86,7 @@ var cats = {
   },
   "oth": {
     "name": "oth",
-    "title": "Other types",
+    "title": "Unknown evidence",
     "years": {
       "no":   30,
       "pre":  31,
@@ -105,7 +116,7 @@ var cats = {
   },
   "all": {
     "name": "all",
-    "title": "All types",
+    "title": "Everything",
     "years": {
       "no":   [0, 14, 30, 28, 29],
       "pre":  [15, 31],
