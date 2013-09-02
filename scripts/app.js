@@ -142,9 +142,9 @@ function loadGBIF(callback) {
     timeline.timeline_tooltip.addHandler(".hamburger a");
   });
 
-  // Analysis
-  analysis = new gbif.ui.view.Analysis({ map: map });
-  $("#wrapper").append(analysis.render());
+  // Analysis (removed for first iteration)
+  //analysis = new gbif.ui.view.Analysis({ map: map });
+  //$("#wrapper").append(analysis.render());
 
   // Layer selector
   layerSelector = new gbif.ui.view.LayerSelector({ map: map });

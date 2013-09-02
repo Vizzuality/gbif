@@ -7,7 +7,6 @@ var loaded        = false,
     GOD           = {},
     analysis      = {},
     timeline      = {},
-    //torqueLayer   = {}, // we will actually use a GBIFLayer
     tileLayer     = {},
     drawnItems    = {},
     svg           = [],
@@ -74,21 +73,22 @@ function loadGBIF(callback) {
 
   // http://vizzuality.github.io/gbif/index.html?style=satellite
   var layer = config.MAP.layer;
+  var resolution = config.MAP.resolution;
 
   if(getURLParameter("style")) {
     layer = getURLParameter("style");
-
     config.MAP.layer = layer;
+  }
+  if(getURLParameter("resolution")) {
+    resolution = getURLParameter("resolution");
+    config.MAP.resolution = resolution;
   }
 
   var layerUrl = layers[layer]['url'];
-
   var layerOptions = {
     attribution: layers[layer]['attribution']
   }
-
   baseMap = new L.tileLayer(layerUrl, layerOptions);
-
   baseMap.addTo(map);
 
   // http://vizzuality.github.io/gbif/index.html?type=TAXON&key=1
@@ -134,13 +134,16 @@ function loadGBIF(callback) {
     timeline.timeline_tooltip.addHandler(".hamburger a");
   });
 
-  // Analysis
-  analysis = new gbif.ui.view.Analysis({ map: map });
-  $("#wrapper").append(analysis.render());
+  // Feedback on data issues removed for this release
+  //analysis = new gbif.ui.view.Analysis({ map: map });
+  //$("#wrapper").append(analysis.render());
 
   // Layer selector
   layerSelector = new gbif.ui.view.LayerSelector({ map: map });
   $("#wrapper").append(layerSelector.render());
+  
+  resolutionSelector = new gbif.ui.view.ResolutionSelector({ map: map });
+  $("#wrapper").append(resolutionSelector.render());
 }
 
 $(function() {

@@ -83,6 +83,14 @@ L.GBIFLayer = L.TileLayer.extend({
   },
   
   /**
+   * Sets the resolution for the map
+   */ 
+  setResolution: function(resolution) {
+    this.resolution=resolution;
+    this.refreshView();
+  },
+  
+  /**
    * Using the base url template, constructs a new URL for the style, resolution and options
    * chosen and triggers a redraw.
    */
@@ -100,6 +108,11 @@ L.GBIFLayer = L.TileLayer.extend({
       if (this.style !== undefined) {
         new_url += "&" + this.style;
       }
+      
+      // resolution is optional, but controlled via setResolution
+      if (this.resolution !== undefined) {
+        new_url += "&resolution=" + this.resolution;
+      }      
       
       // only trigger a refresh if the URL has actually changed
       if (this._url != new_url) {

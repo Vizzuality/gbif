@@ -21,13 +21,13 @@ var layers = {
     "name": "ocean",
     "url": "http://server.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer/tile/{z}/{y}/{x}.png",
     "attribution": "Esri, DeLorme, FAO, USGS, NOAA, GEBCO, IHO-IOC GEBCO, NGS, NIWA",
-    "png-render-style": "palette=yellows_reds&resolution=4"
+    "png-render-style": "palette=yellows_reds"
   },
   "satellite": {
     "name": "satellite",
     "url": "http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}.png",
     "attribution": "Esri, DeLorme, FAO, NOAA, DigitalGlobe, GeoEye, i-cubed, USDA, USGS, AEX, Getmapping, Aerogrid, IGN, IGP, swisstopo, and the GIS User Community",
-    "png-render-style": "palette=yellows_reds&resolution=4"
+    "png-render-style": "palette=yellows_reds"
   },
   "light": {
     "name": "light",
@@ -39,9 +39,16 @@ var layers = {
     "name": "grey-blue",
     "url": "http://2.maps.nlp.nokia.com/maptile/2.1/maptile/newest/normal.day.grey/{z}/{x}/{y}/256/png8?app_id=_peU-uCkp-j8ovkzFGNU&app_code=gBoUkAMoxoqIWfxWA5DuMQ",
     "attribution": "Nokia",
-    "png-render-style": "palette=yellows_reds&resolution=4"
+    "png-render-style": "palette=yellows_reds"
   }
 }
+
+var resolutions = {
+  "1px" : { "name" : "1", "button" : "images/1px.png"},
+  "2px" : { "name" : "2", "button" : "images/2px.png"},
+  "4px" : { "name" : "4", "button" : "images/4px.png"},
+  "8px" : { "name" : "8", "button" : "images/8px.png"}
+};
 
 var cats = {
   "sp": {
@@ -152,9 +159,10 @@ var config = {
     type: "TAXON",
     key: 1,
     layer: "dark",
-    cat: "sp",
-    lat: 36.60670888641815,
-    lng: 38.627929687,
-    zoom: 2
+    resolution: "1",
+    cat: "all",
+    lat: 0,
+    lng: 0,
+    zoom: 1
   }
 };
