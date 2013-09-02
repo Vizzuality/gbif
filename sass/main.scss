@@ -212,13 +212,10 @@ strong { font-weight: bold; }
     position: relative;
     float: right;
     margin-top: 5px;
+    top: -5px;
     @include border-radius(5px);
     background: #ccc;
-
-    &:first-child { margin-top: -32px; }
-    &:last-child { margin-top: 5px; }
-
-    &.selected a { opacity: 1; margin-top: 0px;}
+    &.selected a { opacity: 1; }
 
     a {
       display: block;

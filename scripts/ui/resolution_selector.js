@@ -101,7 +101,7 @@ gbif.ui.view.ResolutionSelector = Backbone.View.extend({
       this.$resolutions.animate({
         opacity: 0,
         width: 0
-      }, 150, function() {
+      }, 50, function() {
         self.$resolutions.hide();
         self.$selected_resolution.fadeIn(150);
       });
@@ -112,8 +112,9 @@ gbif.ui.view.ResolutionSelector = Backbone.View.extend({
         self.$resolutions.show();
         self.$resolutions.animate({
           opacity: 1,
-          height:  -32 * self.resolutions.length + 5 * (self.resolutions.length - 2) + 8
-        }, 150);
+          //height: -32 * (self.resolutions.length) // + 5 * (self.resolutions.length - 2) + 8
+          height: 32
+        }, 50);
       });
     }
   },
