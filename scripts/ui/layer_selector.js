@@ -15,7 +15,7 @@ gbif.ui.model.LayerSelector = Backbone.Model.extend({
 });
 
 gbif.ui.view.LayerSelector = Backbone.View.extend({
-  className: 'layer_selector',
+  className: 'layer_selector selector',
 
   events: {
     "click li a": "_onLayerClick",
@@ -24,21 +24,16 @@ gbif.ui.view.LayerSelector = Backbone.View.extend({
   initialize: function() {
     var self = this;
 
-    _.bindAll( this, "_toggleOpen");
+    _.bindAll(this, "_toggleOpen");
 
     this.options = _.extend(this.options, this.defaults);
 
     this.layers = new gbif.ui.collection.Layers();
 
-    // http://vizzuality.github.io/gbif/index.html?style=satellite
-    var layer_ = getURLParameter("style") || config.MAP.layer;
-
-    // layers are defined in helpers.js
+    // layers are defined in helpers
     _.each(layers, function(layer) {
-      self.layers.add(new gbif.ui.model.Layer(layer['name'] === layer_ ? _.extend(layer, { selected: true }) : layer));
+      self.layers.add(new gbif.ui.model.Layer(layer['name'] === config.MAP.layer ? _.extend(layer, { selected: true }) : layer));
     });
-
-    // this.layers.bind("change", function() { debugger; });
 
     this.selectedLayer = this.layers.find(function(layer) { return layer.get("selected"); });
 
@@ -83,16 +78,6 @@ gbif.ui.view.LayerSelector = Backbone.View.extend({
 
     this.$selected_layer.empty();
     
-    // alert the overlays of the style change event
- 		//if (typeof torqueLayer != 'undefined') {
-		  // there are no CartoCSS palettes defined (yet)
-		  //torqueLayer.setCartoCss(...);
-  	//}	  
-	  if (typeof tileLayer != 'undefined') {
-		  tileLayer.setStyle(layers[this.selectedLayer.get("name")]['png-render-style']);
-  	}
-  	
-
     this.selectedLayer.set("thumbnail", this._getThumbnail(this.selectedLayer));
     this.$selected_layer.append(template.render( this.selectedLayer.toJSON() ));
   },
@@ -127,9 +112,9 @@ gbif.ui.view.LayerSelector = Backbone.View.extend({
     e && e.preventDefault();
     e && e.stopImmediatePropagation();
 
-    var map = this.options.map;
-    var $li  = $(e.target).closest("li");
-    var name = $li.attr("id");
+    var map = this.options.map,
+        $li  = $(e.target).closest("li"),
+        name = $li.attr("id");
 
     if(this.selectedLayer.get("name") === name) {
       if($li.parent().hasClass("selected_layer")) {
@@ -147,6 +132,10 @@ gbif.ui.view.LayerSelector = Backbone.View.extend({
     this.selectedLayer.set("selected", false);
     layer.set("selected", true);
     this.selectedLayer = layer;
+
+    if(config.LAYERTYPE === 'png') {
+      mainLayer.setStyle(layers[this.selectedLayer.get("name")]['png-render-style']);
+    }
 
     baseMap.setUrl(this.selectedLayer.get("url"));
     map.attributionControl.addAttribution(this.selectedLayer.get("attribution"));
@@ -180,8 +169,8 @@ gbif.ui.view.LayerSelector = Backbone.View.extend({
     this.$layers         = this.$el.find(".layers");
     this.$selected_layer = this.$el.find(".selected_layer");
 
-    this._addSelectedLayer();
     this._addLayers();
+    this._addSelectedLayer();
     this._toggleOpen();
 
     return this.$el;

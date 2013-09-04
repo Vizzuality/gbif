@@ -28,7 +28,7 @@ gbif.ui.view.TimelineButton = Backbone.View.extend({
 gbif.ui.model.Timeline = Backbone.Model.extend({
   defaults: {
     collapsed: true,
-    left_year: 1900,
+    left_year: "no",
     right_year: 2020,
     records: 0
   }
@@ -102,8 +102,8 @@ gbif.ui.view.Timeline = Backbone.View.extend({
 
   toggle: function() {
     //fullscreen
-    if (!document.fullscreenElement && // alternative standard method
-        !document.mozFullScreenElement && !document.webkitFullscreenElement) { // current working methods
+    if (!document.fullscreenElement &&
+        !document.mozFullScreenElement && !document.webkitFullscreenElement) {
       if (document.documentElement.requestFullscreen) {
         document.documentElement.requestFullscreen();
       } else if (document.documentElement.mozRequestFullScreen) {
@@ -144,7 +144,7 @@ gbif.ui.view.Timeline = Backbone.View.extend({
         'left': margin * 2 + 75
       }, 150);
 
-      $(this.$analysis_control).animate({
+      $(this.$control_top_right).animate({
         'top': margin,
         'right': margin
       }, 150);
@@ -177,13 +177,13 @@ gbif.ui.view.Timeline = Backbone.View.extend({
         'left': margin_expanded + 75 + margin
       }, 150);
 
-      $(this.$analysis_control).animate({
-        'top': margin_expanded,
-        'right': margin_expanded,
-      }, 150);
-
       $(this.$layer_selector_control).animate({
         'top': margin_expanded + margin + 38,
+        'right': margin_expanded
+      }, 150);
+
+      $(this.$control_top_right).animate({
+        'top': margin_expanded,
         'right': margin_expanded
       }, 150);
     }
@@ -362,14 +362,8 @@ gbif.ui.view.Timeline = Backbone.View.extend({
     this.model.set("records", nums_array);
 
     this._updateLegendDesc();
-		// trigger callbacks on the layers (torque or PNG depending on the config)
-		if (typeof torqueLayer != 'undefined') {
-		  torqueLayer.setKey(key_array);
-		} 
-		if (typeof tileLayer != 'undefined') {
-		  tileLayer.setKey(key_array);
-		}
-    
+
+		mainLayer.setKey(key_array);
 
     var iframeUrl = $.param(config.MAP);
 
@@ -530,10 +524,9 @@ gbif.ui.view.Timeline = Backbone.View.extend({
     this.$trail        = this.$el.find(".trail");
     this.$range        = this.$el.find(".range");
 
-    this.$analysis_control = $(".analysis_control");
     this.$timeline_control = $(this.button.$el);
     this.$zoom_control = $(".leaflet-control-zoom");
-    this.$layer_selector_control = $(".layer_selector");
+    this.$control_top_right = $(".selectors")
 
     this.$legend_title = this.$el.find(".legend .title");
     this.$legend_desc = this.$el.find(".legend .desc");
@@ -551,7 +544,7 @@ gbif.ui.view.Timeline = Backbone.View.extend({
     var left_handle_x  = parseInt(_.keys(this.years)[0], 10);
     var right_handle_x = parseInt(_.keys(this.years)[_.size(this.years)-1], 10) + 3;
 
-    this.model.set("left_handle",  left_handle_x+(this.grid_x * 2));
+    this.model.set("left_handle",  0);
     this.model.set("right_handle", right_handle_x*this.grid_x);
 
     if(typeof cats[this.model.get("current_cat")]['years'] != 'undefined') {
@@ -570,6 +563,8 @@ gbif.ui.view.Timeline = Backbone.View.extend({
       this.model.set("records", aggr_data[key]);
 
       $(this.$legend_desc).text("Showing all records (" + this.model.get("records") + ")");
+
+      mainLayer.setKey(key);
     }
   },
 
@@ -595,7 +590,7 @@ gbif.ui.view.Timeline = Backbone.View.extend({
       var left_handle_x  = parseInt(_.keys(this.years)[0], 10);
       var right_handle_x = parseInt(_.keys(this.years)[_.size(this.years)-1], 10) + 3;
 
-      this.model.set("left_handle",  left_handle_x+(this.grid_x * 2));
+      this.model.set("left_handle",  left_handle_x);
       this.model.set("right_handle", right_handle_x*this.grid_x);
 
       setTimeout(function() { self._adjustBothHandles(); }, 250);
@@ -615,13 +610,7 @@ gbif.ui.view.Timeline = Backbone.View.extend({
 
       $(this.$legend_desc).text("Showing all records (" + this.model.get("records") + ")");
 			
-			// trigger callbacks on the layers (torque or PNG depending on the config)
- 		  if (typeof torqueLayer != 'undefined') {
-		    torqueLayer.setKey(key);
-  		} 
-	  	if (typeof tileLayer != 'undefined') {
-		    tileLayer.setKey(key);
-  		}    
+			mainLayer.setKey(key);
     }
 
     this._updateLegendTitle();

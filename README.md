@@ -24,7 +24,13 @@ http://vizzuality.github.io/gbif/index.html?style=satellite
 http://vizzuality.github.io/gbif/index.html?cat=all
 ```
 
-To embed the map in a page you only have to place an iframe with one of the URLs, in ```http://vizzuality.github.io/gbif.html``` you have an example of different embed maps in the same page.
+A tile version of the map is accessible for non-Torque-compatible browsers:
+
+```
+http://vizzuality.github.io/gbif/index.html?type=TAXON&key=1&layertype=png
+```
+
+To embed the map in a page you only have to place an iframe with one of the URLs:
 
 ```
 <iframe id="iframe1" name="iframe1" src="http://vizzuality.github.io/gbif/index.html?type=TAXON&key=1" allowfullscreen height="423" width="627" frameborder="0" /></iframe>

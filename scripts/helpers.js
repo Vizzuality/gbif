@@ -44,10 +44,26 @@ var layers = {
 }
 
 var resolutions = {
-  "1px" : { "name" : "1", "button" : "images/1px.png"},
-  "2px" : { "name" : "2", "button" : "images/2px.png"},
-  "4px" : { "name" : "4", "button" : "images/4px.png"},
-  "8px" : { "name" : "8", "button" : "images/8px.png"}
+  "res1" : {
+    "name" : "res1",
+    "resolution" : 1
+  },
+  "res2" : {
+    "name" : "res2",
+    "resolution" : 2
+  },
+  "res4" : {
+    "name" : "res4",
+    "resolution" : 4
+  },
+  "res8" : {
+    "name" : "res8",
+    "resolution" : 8
+  },
+  "res16" : {
+    "name" : "res16",
+    "resolution" : 16
+  }
 };
 
 var cats = {
@@ -144,6 +160,7 @@ var cats = {
 };
 
 var config = {
+  CDN: "d30ugvnferw5sg.cloudfront.net",
   GBIF_URL: "http://d30ugvnferw5sg.cloudfront.net/map/density/tile/density/tile.tcjson?key=1&x={x}&y={y}&z={z}&type=TAXON",
   GRAPH_MARGIN: 10,
   GRAPH_H: 40,
@@ -155,11 +172,22 @@ var config = {
       opacity: 1
     }
   },
+  TORQUE_LAYER_CARTOCSS: [
+    '#layer {',
+    '  polygon-fill: #FFFF00;',
+    '  [value > 10] { polygon-fill: #FFCC00; }',
+    '  [value > 100] { polygon-fill: #FF9900; }',
+    '  [value > 1000] { polygon-fill: #FF6600; }',
+    '  [value > 10000] { polygon-fill: #FF3300; }',
+    '  [value > 100000] { polygon-fill: #CC0000; }',
+    '}'
+  ].join('\n'),
+  LAYERTYPE: "torque",
   MAP: {
     type: "TAXON",
     key: 1,
     layer: "dark",
-    resolution: "1",
+    resolution: 1,
     cat: "all",
     lat: 0,
     lng: 0,

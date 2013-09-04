@@ -30,15 +30,10 @@ gbif.ui.view.ResolutionSelector = Backbone.View.extend({
 
     this.resolutions = new gbif.ui.collection.Resolutions();
 
-    // http://vizzuality.github.io/gbif/index.html?style=satellite
-    var resolution_ = getURLParameter("resolution") || config.MAP.resolution;
-
-    // resolutions are defined in helpers.js
+    // resolutions are defined in helpers
     _.each(resolutions, function(resolution) {
-      self.resolutions.add(new gbif.ui.model.Resolution(resolution['name'] === resolution_ ? _.extend(resolution, { selected: true }) : resolution));
+      self.resolutions.add(new gbif.ui.model.Resolution(resolution['resolution'] === config.MAP.resolution ? _.extend(resolution, { selected: true }) : resolution));
     });
-
-    // this.resolutions.bind("change", function() { debugger; });
 
     this.selectedResolution = this.resolutions.find(function(resolution) { return resolution.get("selected"); });
 
@@ -61,14 +56,10 @@ gbif.ui.view.ResolutionSelector = Backbone.View.extend({
     });
 
     this.$resolutions.empty();
+
     this.resolutions.each(function(resolution) {
-      resolution.set("thumbnail", self._getThumbnail(resolution));
       self.$resolutions.append(template.render( resolution.toJSON() ));
     });
-  },
-
-  _getThumbnail: function(resolution) {
-    return resolution.get("button");
   },
 
   _addSelectedResolution: function() {
@@ -77,18 +68,7 @@ gbif.ui.view.ResolutionSelector = Backbone.View.extend({
     });
 
     this.$selected_resolution.empty();
-    
-    // alert the overlays of the style change event
- 		//if (typeof torqueResolution != 'undefined') {
-		  // there are no CartoCSS palettes defined (yet)
-		  //torqueResolution.setCartoCss(...);
-  	//}	  
-	  if (typeof tileResolution != 'undefined') {
-		  tileResolution.setStyle(resolutions[this.selectedResolution.get("name")]['png-render-style']);
-  	}
-  	
 
-    this.selectedResolution.set("thumbnail", this._getThumbnail(this.selectedResolution));
     this.$selected_resolution.append(template.render( this.selectedResolution.toJSON() ));
   },
 
@@ -112,8 +92,7 @@ gbif.ui.view.ResolutionSelector = Backbone.View.extend({
         self.$resolutions.show();
         self.$resolutions.animate({
           opacity: 1,
-          //height: -32 * (self.resolutions.length) // + 5 * (self.resolutions.length - 2) + 8
-          height: 32
+          width: 32 * self.resolutions.length + 5 * (self.resolutions.length - 2) + 8
         }, 50);
       });
     }
@@ -123,8 +102,8 @@ gbif.ui.view.ResolutionSelector = Backbone.View.extend({
     e && e.preventDefault();
     e && e.stopImmediatePropagation();
 
-    var $li  = $(e.target).closest("li");
-    var name = $li.attr("id");
+    var $li  = $(e.target).closest("li"),
+        name = $li.attr("id");
 
     if(this.selectedResolution.get("name") === name) {
       if($li.parent().hasClass("selected_resolution")) {
@@ -136,16 +115,16 @@ gbif.ui.view.ResolutionSelector = Backbone.View.extend({
       return;
     }
 
-    
     var resolution = this.resolutions.find(function(resolution) { return name === resolution.get("name"); });
     this.selectedResolution.set("selected", false);
     resolution.set("selected", true);
     this.selectedResolution = resolution;
 
-    // update the resolution on the overlay
-		if (typeof tileLayer != 'undefined') {
-		  tileLayer.setResolution(resolution.get("name"));
-		}
+    // TODO: implement setResolution in Torque
+    // TODO: add cartoCSS for Torque styles
+    if(config.LAYERTYPE === 'png') {
+      mainLayer.setResolution(this.selectedResolution.get("resolution"));
+    }
 
     this._addResolutions();
     this._addSelectedResolution();
@@ -176,8 +155,8 @@ gbif.ui.view.ResolutionSelector = Backbone.View.extend({
     this.$resolutions         = this.$el.find(".resolutions");
     this.$selected_resolution = this.$el.find(".selected_resolution");
 
-    this._addSelectedResolution();
     this._addResolutions();
+    this._addSelectedResolution();
     this._toggleOpen();
 
     return this.$el;

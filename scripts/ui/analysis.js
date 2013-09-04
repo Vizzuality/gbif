@@ -1,5 +1,5 @@
 gbif.ui.view.AnalysisButton = Backbone.View.extend({
-  className: 'analysis_control',
+  className: 'analysis_control selector',
 
   events: {
     'click a#analysis_control': '_onClickButton'
@@ -142,7 +142,7 @@ gbif.ui.view.Analysis = gbif.core.View.extend({
 
     this.dialog = new gbif.ui.view.AnalysisSubscribe();
 
-    $("#wrapper").append(this.button.render());
+    $(".selectors").append(this.button.render());
     $("#wrapper").append(this.dialog.render());
   }
 });

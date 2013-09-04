@@ -4,22 +4,12 @@ var loaded        = false,
     GOD           = {},
     analysis      = {},
     timeline      = {},
+    mainLayer     = {},
     torqueLayer   = {},
     drawnItems    = {},
     svg           = [],
     aggr_data     = null,
     total_data    = 0;
-
-var TORQUE_LAYER_CARTOCSS= [
-    '#layer {',
-    '  polygon-fill: #FFFF00;',
-    '  [value > 10] { polygon-fill: #FFCC00; }',
-    '  [value > 100] { polygon-fill: #FF9900; }',
-    '  [value > 1000] { polygon-fill: #FF6600; }',
-    '  [value > 10000] { polygon-fill: #FF3300; }',
-    '  [value > 100000] { polygon-fill: #CC0000; }',
-    '}'
-].join('\n');
 
 function get_aggregated(callback) {
   torqueLayer.provider.getTile({ x: 0, y: 0 }, 0, function(data) {
@@ -42,8 +32,7 @@ function loadGBIF(callback) {
 
   var lat = getURLParameter("lat"),
       lng = getURLParameter("lng"),
-      center = new L.LatLng(config.MAP.lat, config.MAP.lng),
-      zoom = config.MAP.zoom;
+      center = new L.LatLng(config.MAP.lat, config.MAP.lng);
 
   // http://vizzuality.github.io/gbif/index.html?lat=39.407856289405856&lng=-0.361511299999961
   if(lat && lng) {
@@ -55,14 +44,12 @@ function loadGBIF(callback) {
 
   // http://vizzuality.github.io/gbif/index.html?zoom=11
   if(getURLParameter("zoom")) {
-    zoom = getURLParameter("zoom");
-
-    config.MAP.zoom = zoom;
+    config.MAP.zoom = getURLParameter("zoom");
   }
 
   map = new L.Map('map', {
     center: center,
-    zoom: zoom
+    zoom: config.MAP.zoom
   });
 
   map.on('moveend', function(e) {
@@ -80,19 +67,24 @@ function loadGBIF(callback) {
     }, 'http://0.0.0.0:8000');
   });
 
-  // http://vizzuality.github.io/gbif/index.html?style=satellite
-  var layer = config.MAP.layer;
-
-  if(getURLParameter("style")) {
-    layer = getURLParameter("style");
-
-    config.MAP.layer = layer;
+  // http://vizzuality.github.io/gbif/index.html?resolution=16
+  if(getURLParameter("resolution")) {
+    config.MAP.resolution = parseInt(getURLParameter("resolution"), 10);
   }
 
-  var layerUrl = layers[layer]['url'];
+  if(config.MAP.resolution != 4) {
+    config.CDN = "apidev.gbif.org";
+  }
+
+  // http://vizzuality.github.io/gbif/index.html?style=satellite
+  if(getURLParameter("style")) {
+    config.MAP.layer = getURLParameter("style");
+  }
+
+  var layerUrl = layers[config.MAP.layer]['url'];
 
   var layerOptions = {
-    attribution: layers[layer]['attribution']
+    attribution: layers[config.MAP.layer]['attribution']
   }
 
   baseMap = new L.tileLayer(layerUrl, layerOptions);
@@ -101,54 +93,70 @@ function loadGBIF(callback) {
 
   // http://vizzuality.github.io/gbif/index.html?type=TAXON&key=1
   // http://vizzuality.github.io/gbif/index.html?type=COUNTRY&key=ES
-  var type = config.MAP.type,
-      key = config.MAP.key;
-
   if(getURLParameter("type")) {
-    type = getURLParameter("type");
-    key = getURLParameter("key");
+    config.MAP.type = getURLParameter("type");
+    config.MAP.key = getURLParameter("key");
+  }
 
-    config.MAP.type = type;
-    config.MAP.key = key;
-    config.GBIF_URL = "http://d30ugvnferw5sg.cloudfront.net/map/density/tile/density/tile.tcjson?key=" + key + "&x={x}&y={y}&z={z}&type=" + type;
+  config.GBIF_URL = "http://" + config.CDN + "/map/density/tile/density/tile.tcjson?key=" + config.MAP.key + "&x={x}&y={y}&z={z}&type=" + config.MAP.type + "&resolution=" + config.MAP.resolution;
+
+  // http://vizzuality.github.io/gbif/index.html?layertype=png
+  if(getURLParameter("type")) {
+    config.LAYERTYPE = getURLParameter("layertype");
   }
 
   torqueLayer = new L.TiledTorqueLayer({
     provider: 'url_template',
     url: config.GBIF_URL,
-    resolution: 4,
+    resolution: config.MAP.resolution,
     valueDataType: Float32Array,
     continuousWorld: false,
     subdomains: '1234'
   });
 
-  torqueLayer.addTo(map);
-  torqueLayer.setZIndex(1000);
-  torqueLayer.renderer.setCartoCSS(TORQUE_LAYER_CARTOCSS);
+  if(config.LAYERTYPE === 'png') {
+    tileLayer = new L.GBIFLayer("http://apidev.gbif.org/map/density/tile/density/tile.png?key=" + config.MAP.key + "&x={x}&y={y}&z={z}&type=" + config.MAP.type, {});
+
+    tileLayer.setResolution(config.MAP.resolution);
+    tileLayer.setStyle(layers[config.MAP.layer]['png-render-style']);
+
+    mainLayer = tileLayer;
+  } else {
+    torqueLayer.setZIndex(1000);
+    torqueLayer.setCartoCSS(config.TORQUE_LAYER_CARTOCSS);
+
+    mainLayer = torqueLayer;
+  }
+
+  mainLayer.addTo(map);
 
   get_aggregated(function() {
     // http://vizzuality.github.io/gbif/index.html?cat=all
-    var cat = config.MAP.cat;
-
     if(getURLParameter("cat")) {
-      cat = getURLParameter("cat");
+      config.MAP.cat = getURLParameter("cat");
     }
 
     timeline = new gbif.ui.view.Timeline({
       container: $("#wrapper"),
-      cat: cat
+      cat: config.MAP.cat
     });
 
     timeline.timeline_tooltip.addHandler(".hamburger a");
   });
 
   // Analysis (removed for first iteration)
-  //analysis = new gbif.ui.view.Analysis({ map: map });
-  //$("#wrapper").append(analysis.render());
+  // analysis = new gbif.ui.view.Analysis({ map: map });
+  // $(".selectors").append(analysis.render());
 
   // Layer selector
   layerSelector = new gbif.ui.view.LayerSelector({ map: map });
-  $("#wrapper").append(layerSelector.render());
+  $(".selectors").append(layerSelector.render());
+
+  // Resolution selector (only working for png)
+  if(config.LAYERTYPE === 'png') {
+    resolutionSelector = new gbif.ui.view.ResolutionSelector();
+    $(".selectors").append(resolutionSelector.render());
+  }
 }
 
 function send_profiler_stats() {

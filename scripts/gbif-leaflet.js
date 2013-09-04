@@ -54,7 +54,7 @@ L.GBIFLayer = L.TileLayer.extend({
   /**
    * Stores the base URL so we can reconstruct it with keys later.
    */
-  initialize: function(url, options) { 
+  initialize: function(url, options) {
     L.TileLayer.prototype.initialize.call(this, url, options); 
     this.base_url = url;
   },
@@ -74,7 +74,7 @@ L.GBIFLayer = L.TileLayer.extend({
   },
   
   /**
-   * This expects the parameter to append to the URL to customize the style.  It should not include 
+   * This expects the parameter to append to the URL to customize the style. It should not include
    * & at the beginning.  E.g. "saturation=true" would be acceptable, not "&saturation=true"
    */ 
   setStyle: function(style) {
