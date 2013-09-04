@@ -59,12 +59,8 @@ var resolutions = {
   "res8" : {
     "name" : "res8",
     "resolution" : 8
-  },
-  "res16" : {
-    "name" : "res16",
-    "resolution" : 16
   }
-};
+}; // 16, 32
 
 var cats = {
   "sp": {

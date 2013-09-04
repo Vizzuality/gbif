@@ -187,7 +187,6 @@ strong { font-weight: bold; }
   &.res2 a { @include resolution-icons-sprite(res2); }
   &.res4 a { @include resolution-icons-sprite(res4); }
   &.res8 a { @include resolution-icons-sprite(res8); }
-  &.res16 a { @include resolution-icons-sprite(res16); }
 }
 
 .layers,

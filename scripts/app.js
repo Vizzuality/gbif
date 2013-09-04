@@ -67,11 +67,12 @@ function loadGBIF(callback) {
     }, 'http://0.0.0.0:8000');
   });
 
-  // http://vizzuality.github.io/gbif/index.html?resolution=16
+  // http://vizzuality.github.io/gbif/index.html?resolution=4
   if(getURLParameter("resolution")) {
     config.MAP.resolution = parseInt(getURLParameter("resolution"), 10);
   }
 
+  // TODO: Remove when resolutions are deployed to CDN
   if(config.MAP.resolution != 4) {
     config.CDN = "apidev.gbif.org";
   }
