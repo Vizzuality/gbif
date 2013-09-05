@@ -181,7 +181,9 @@ strong { font-weight: bold; }
 }
 
 .resolution_selector li {
-  background: #fff;
+  background: transparent;
+
+  a { border: 0; }
 
   &.res1 a { @include resolution-icons-sprite(res1); }
   &.res2 a { @include resolution-icons-sprite(res2); }
