@@ -171,6 +171,6 @@ function send_profiler_stats() {
 
 $(function() {
   loadGBIF();
-
-  setTimeout(send_profiler_stats, 12000);
+  // uncomment to send back metrics to CDB
+  //setTimeout(send_profiler_stats, 12000);
 });
