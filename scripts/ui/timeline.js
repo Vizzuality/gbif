@@ -371,7 +371,7 @@ gbif.ui.view.Timeline = Backbone.View.extend({
       origin: window.name,
       records: this.model.get("records"),
       url: iframeUrl
-    }, 'http://0.0.0.0:8000');
+    }, '*');
   },
 
   _updateLegendTitle: function() {

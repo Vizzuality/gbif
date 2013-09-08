@@ -138,7 +138,7 @@ gbif.ui.view.ResolutionSelector = Backbone.View.extend({
     parent.postMessage({
       origin: window.name,
       url: iframeUrl
-    }, 'http://0.0.0.0:8000');
+    }, '*');
   },
 
   open: function() {
