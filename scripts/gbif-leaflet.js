@@ -64,13 +64,17 @@ L.GBIFLayer = L.TileLayer.extend({
    * E.g. when a time slider changes, this should be called.
    */
   setKey: function(key) {
+    var orig = this.key_array;
     // it can be an array or a single value
     if (key.length === undefined) {
       this.key_array = [key];
     } else {
       this.key_array = key;
     }
-    this.refreshView();
+    // only redraw if it has changed from the first set (which is null)
+    if (orig !== undefined) {
+      this.refreshView();
+    }
   },
   
   /**
