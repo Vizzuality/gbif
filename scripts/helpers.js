@@ -72,21 +72,21 @@ var layers = {
 }
 
 var resolutions = {
-  "res8" : {
-    "name" : "res8",
-    "resolution" : 8
-  },
-  "res4" : {
-    "name" : "res4",
-    "resolution" : 4
+  "res1" : {
+    "name" : "res1",
+    "resolution" : 1
   },
   "res2" : {
     "name" : "res2",
     "resolution" : 2
   },
-  "res1" : {
-    "name" : "res1",
-    "resolution" : 1
+  "res4" : {
+    "name" : "res4",
+    "resolution" : 4
+  },
+  "res8" : {
+    "name" : "res8",
+    "resolution" : 8
   }
 }; // 16, 32
 
