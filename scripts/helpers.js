@@ -4,6 +4,34 @@ function getURLParameter(name) {
   );
 }
 
+/**
+ * Builds the geometry from the visible extents of the map, suitable for use in the GBIF search.
+ */
+function buildVisibleGeometry(map) {
+  var bounds=map.getBounds();
+  var sw=bounds.getSouthWest(); 
+  var ne=bounds.getNorthEast();
+  var se=bounds.getSouthEast();
+  var nw=bounds.getNorthWest();
+      
+  // limit bounds to be valid casting to decimal
+  sw.lng = Math.floor(sw.lng<-180 ? -180 : sw.lng);
+  sw.lat = Math.floor(sw.lat<-90 ? -90 : sw.lat);
+  nw.lng = Math.floor(nw.lng<-180 ? -180 : nw.lng);
+  nw.lat = Math.ceil(nw.lat>90 ? 90 : nw.lat);
+  ne.lng = Math.ceil(ne.lng>180 ? 180 : ne.lng);
+  ne.lat = Math.ceil(ne.lat>90 ? 90 : ne.lat);
+  se.lng = Math.ceil(se.lng>180 ? 180 : se.lng);
+  se.lat = Math.floor(se.lat<-90 ? -90 : se.lat);  
+  
+  // in the format needed by GBIF search
+  return sw.lng + " " + sw.lat + ","
+    + nw.lng + " " + nw.lat + ","
+    + ne.lng + " " + ne.lat + ","
+    + se.lng + " " + se.lat + ","
+    + sw.lng + " " + sw.lat;
+}
+
 var layers = {
   "classic" : {
     "name": "classic",
@@ -178,15 +206,16 @@ var config = {
     '  [value > 100000] { polygon-fill: #CC0000; }',
     '}'
   ].join('\n'),
-  LAYERTYPE: "torque",
+  LAYERTYPE: "png",
   MAP: {
     type: "TAXON",
     key: 1,
-    layer: "dark",
-    resolution: 1,
+    layer: "classic",
+    resolution: 4,
     cat: "all",
     lat: 0,
     lng: 0,
     zoom: 1
-  }
+  },
+  SEARCH: {}
 };

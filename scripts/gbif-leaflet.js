@@ -78,16 +78,20 @@ L.GBIFLayer = L.TileLayer.extend({
    * & at the beginning.  E.g. "saturation=true" would be acceptable, not "&saturation=true"
    */ 
   setStyle: function(style) {
-    this.style=style;
-    this.refreshView();
+    if (this.options.style != style) {
+      this.options.style = style;
+      this.redraw();    
+    }
   },
   
   /**
    * Sets the resolution for the map
    */ 
   setResolution: function(resolution) {
-    this.resolution=resolution;
-    this.refreshView();
+    if (this.options.resolution != resolution) {
+      this.options.resolution = resolution;
+      this.redraw();    
+    }
   },
   
   /**
@@ -103,17 +107,7 @@ L.GBIFLayer = L.TileLayer.extend({
         layers.push('layer=' + this.key_mapping[key]);
       }
       var new_url = this.base_url + "&" + layers.join("&"); 
-      
-      // styling is optional, but controlled via setStyle
-      if (this.style !== undefined) {
-        new_url += "&" + this.style;
-      }
-      
-      // resolution is optional, but controlled via setResolution
-      if (this.resolution !== undefined) {
-        new_url += "&resolution=" + this.resolution;
-      }      
-      
+            
       // only trigger a refresh if the URL has actually changed
       if (this._url != new_url) {
         this.setUrl(new_url);

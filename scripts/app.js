@@ -60,10 +60,17 @@ function loadGBIF(callback) {
         lng: map.getCenter().lng,
       })
     );
+    
+    var searchUrl = $.param(
+      _.extend(config.SEARCH, {
+        GEOMETRY: buildVisibleGeometry(map)
+      })
+    );
 
     parent.postMessage({
       origin: window.name,
-      url: iframeUrl
+      url: iframeUrl,
+      searchUrl: searchUrl,
     }, '*');
   });
 
@@ -100,7 +107,7 @@ function loadGBIF(callback) {
   }
 
   config.GBIF_URL = "http://" + config.CDN + "/map/density/tile/density/tile.tcjson?key=" + config.MAP.key + "&x={x}&y={y}&z={z}&type=" + config.MAP.type + "&resolution=" + config.MAP.resolution;
-
+  
   // http://vizzuality.github.io/gbif/index.html?layertype=png
   if(getURLParameter("type")) {
     config.LAYERTYPE = getURLParameter("layertype");
@@ -116,11 +123,10 @@ function loadGBIF(callback) {
   });
 
   if(config.LAYERTYPE === 'png') {
-    tileLayer = new L.GBIFLayer("http://apidev.gbif.org/map/density/tile/density/tile.png?key=" + config.MAP.key + "&x={x}&y={y}&z={z}&type=" + config.MAP.type, {});
-
+    tileLayer = new L.GBIFLayer("http://apidev.gbif.org/map/density/tile/density/tile.png?key=" + config.MAP.key + "&resolution={resolution}&x={x}&y={y}&z={z}&type=" + config.MAP.type + "&{style}", 
+      {resolution:4});
     tileLayer.setResolution(config.MAP.resolution);
     tileLayer.setStyle(layers[config.MAP.layer]['png-render-style']);
-
     mainLayer = tileLayer;
   } else {
     torqueLayer.setZIndex(1000);
@@ -158,6 +164,30 @@ function loadGBIF(callback) {
     resolutionSelector = new gbif.ui.view.ResolutionSelector();
     $(".selectors").append(resolutionSelector.render());
   }
+  
+  setup_search_url();
+}
+
+/**
+ * In the global config, we maintain the params needed to construct a URL to get the records
+ * visible on the map.  This changes when categories are changed, the map is zoomed etc.
+ */
+function setup_search_url() {
+  var type = config.MAP.type
+    .replace('TAXON', 'TAXON_KEY'); // map the URLs to the structure the search likes
+  config.SEARCH[type] = config.MAP.key;
+  config.SEARCH.SPATIAL_ISSUES=false; // maps do not show records with issues
+  var searchUrl = $.param(
+    _.extend(config.SEARCH, {
+      GEOMETRY: buildVisibleGeometry(map)
+    })
+  );
+	
+	// fire the initial configuration
+  parent.postMessage({
+    origin: window.name,
+    searchUrl: searchUrl,
+  }, '*');
 }
 
 function send_profiler_stats() {
