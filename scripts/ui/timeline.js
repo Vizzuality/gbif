@@ -368,7 +368,6 @@ gbif.ui.view.Timeline = Backbone.View.extend({
     var iframeUrl = $.param(config.MAP);
 
 		// construct the year (where possible) for the search
-		console.log(self.model.get("left_year") + " - " + self.model.get("right_year"));
 		if ("no date" != self.model.get("left_year")) {
 		  config.SEARCH.YEAR = self.model.get("left_year") + " " + self.model.get("right_year");
 		} else {
