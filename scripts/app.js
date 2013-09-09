@@ -1,3 +1,6 @@
+// Fix for IE9
+window.Float32Array = typeof(window['Float32Array']) == 'undefined' ? Array: Float32Array;
+
 var loaded        = false,
     map           = {},
     baseMap       = {},
