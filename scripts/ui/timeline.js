@@ -632,6 +632,26 @@ gbif.ui.view.Timeline = Backbone.View.extend({
   updateCat: function(key, title) {
     this.model.set("current_title", title);
     this.model.set("current_cat", key);
+
+		// construct the basis of record for the search
+		switch(this.model.get("current_cat")) {
+		  case "sp": config.SEARCH.BASIS_OF_RECORD = "PRESERVED_SPECIMEN"; break;
+		  case "obs": config.SEARCH.BASIS_OF_RECORD = "OBSERVATION"; break;
+		  case "living": config.SEARCH.BASIS_OF_RECORD = "LIVING_SPECIMEN"; break;
+		  case "fossil": config.SEARCH.BASIS_OF_RECORD = "FOSSIL_SPECIMEN"; break;
+		  case "oth": config.SEARCH.BASIS_OF_RECORD = "UNKNOWN"; break;
+		  default: config.SEARCH = _.omit(config.SEARCH, "BASIS_OF_RECORD"); 
+		}
+		
+		// only living or fossil need to fire events- the others trigger a slider change, which will message
+		if (this.model.get("current_cat") == "living" || this.model.get("current_cat") == "fossil") {
+      parent.postMessage({
+        origin: window.name,
+        records: this.model.get("records"),
+        url: $.param(config.MAP), // iframe URL
+        searchUrl: $.param(config.SEARCH)
+      }, '*');
+		}
   },
 
   render: function() {
