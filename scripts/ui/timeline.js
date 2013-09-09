@@ -377,7 +377,7 @@ gbif.ui.view.Timeline = Backbone.View.extend({
 		  // pre 1900 needs a * in the search URL
 		  var min = (self.model.get("left_year") == "pre-1900") ? "*" : self.model.get("left_year");
 		  var max = (self.model.get("right_year") == "pre-1900") ? "*" : self.model.get("right_year");
-		  config.SEARCH.YEAR = min + " " + max;
+		  config.SEARCH.YEAR = min + "," + max;
 		}
     parent.postMessage({
       origin: window.name,
