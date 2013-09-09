@@ -645,6 +645,8 @@ gbif.ui.view.Timeline = Backbone.View.extend({
 		
 		// only living or fossil need to fire events- the others trigger a slider change, which will message
 		if (this.model.get("current_cat") == "living" || this.model.get("current_cat") == "fossil") {
+		  config.SEARCH = _.omit(config.SEARCH, "YEAR"); // no year filter for living or fossil 
+		
       parent.postMessage({
         origin: window.name,
         records: this.model.get("records"),
