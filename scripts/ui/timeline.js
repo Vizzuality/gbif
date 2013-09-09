@@ -323,7 +323,7 @@ gbif.ui.view.Timeline = Backbone.View.extend({
       if(l === 0) {
         self.model.set("left_year", "no date"); // hardcode no-date
       } else if(l === this.grid_x) {
-        self.model.set("left_year", "pre-1990"); // hardcode pre-date
+        self.model.set("left_year", "pre-1900"); // hardcode pre-date
       } else if(l === y[0]) {
         self.model.set("left_year", y[1]);
       }
@@ -364,13 +364,23 @@ gbif.ui.view.Timeline = Backbone.View.extend({
     this._updateLegendDesc();
 
 		mainLayer.setKey(key_array);
-
+		
     var iframeUrl = $.param(config.MAP);
+
+		// construct the year (where possible) for the search
+		console.log(self.model.get("left_year") + " - " + self.model.get("right_year"));
+		if ("no date" != self.model.get("left_year")) {
+		  config.SEARCH.YEAR = self.model.get("left_year") + " " + self.model.get("right_year");
+		} else {
+		  // we have to remove it, as we have no range
+		  config.SEARCH = _.omit(config.SEARCH, "year");
+		}
 
     parent.postMessage({
       origin: window.name,
       records: this.model.get("records"),
-      url: iframeUrl
+      url: iframeUrl,
+      searchUrl: $.param(config.SEARCH)
     }, '*');
   },
 
