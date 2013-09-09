@@ -322,7 +322,7 @@ gbif.ui.view.Timeline = Backbone.View.extend({
 
       if(l === 0) {
         self.model.set("left_year", "no date"); // hardcode no-date
-      } else if(l === this.grid_x) {
+      } else if(l === self.grid_x) {
         self.model.set("left_year", "pre-1900"); // hardcode pre-date
       } else if(l === y[0]) {
         self.model.set("left_year", y[1]);
@@ -330,6 +330,8 @@ gbif.ui.view.Timeline = Backbone.View.extend({
 
       if(r === y[0]) {
         self.model.set("right_year", y[1]);
+      } else if(r === self.grid_x) {
+        self.model.set("right_year", "pre-1900"); // hardcode pre-date
       } else if(r === self.grid_x * 14) {
         self.model.set("right_year", 2020); // hardcode last year :(
       }
@@ -368,13 +370,15 @@ gbif.ui.view.Timeline = Backbone.View.extend({
     var iframeUrl = $.param(config.MAP);
 
 		// construct the year (where possible) for the search
-		if ("no date" != self.model.get("left_year")) {
-		  config.SEARCH.YEAR = self.model.get("left_year") + " " + self.model.get("right_year");
+		if ("no date" == self.model.get("left_year") || "no date" == self.model.get("right_year")) {
+		  // if no date is chosen, we can't add a search at all
+		  config.SEARCH = _.omit(config.SEARCH, "YEAR");
 		} else {
-		  // we have to remove it, as we have no range
-		  config.SEARCH = _.omit(config.SEARCH, "year");
+		  // pre 1900 needs a * in the search URL
+		  var min = (self.model.get("left_year") == "pre-1900") ? "*" : self.model.get("left_year");
+		  var max = (self.model.get("right_year") == "pre-1900") ? "*" : self.model.get("right_year");
+		  config.SEARCH.YEAR = min + " " + max;
 		}
-
     parent.postMessage({
       origin: window.name,
       records: this.model.get("records"),
