@@ -18,7 +18,8 @@ function get_aggregated(callback) {
   torqueLayer.provider.getTile({ x: 0, y: 0 }, 0, function(data) {
     aggr_data = torqueLayer.provider.aggregateByKey(data.rows);
     // where tiles don't cover all keys (e.g. buckets) we need to set to 0 records
-    for (i=0; i< aggr_data.length ; i++)  {
+    // hard coded to cover all GBIF keys
+    for (i=0; i<=43 ; i++)  {
       aggr_data[i] = aggr_data[i] || 0;
     }
     callback();
