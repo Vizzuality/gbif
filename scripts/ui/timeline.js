@@ -323,7 +323,7 @@ gbif.ui.view.Timeline = Backbone.View.extend({
       if(l === 0) {
         self.model.set("left_year", "no date"); // hardcode no-date
       } else if(l === self.grid_x) {
-        self.model.set("left_year", "pre-1900"); // hardcode pre-date
+        self.model.set("left_year", "pre"); // hardcode pre-date
       } else if(l === y[0]) {
         self.model.set("left_year", y[1]);
       }
@@ -331,7 +331,7 @@ gbif.ui.view.Timeline = Backbone.View.extend({
       if(r === y[0]) {
         self.model.set("right_year", y[1]);
       } else if(r === self.grid_x) {
-        self.model.set("right_year", "pre-1900"); // hardcode pre-date
+        self.model.set("right_year", "pre"); // hardcode pre-date
       } else if(r === self.grid_x * 14) {
         self.model.set("right_year", 2020); // hardcode last year :(
       }
@@ -339,6 +339,7 @@ gbif.ui.view.Timeline = Backbone.View.extend({
 
     if(l === 0) {
       cat_array.push("no");
+      cat_array.push("pre");
     } else if(l === this.grid_x) {
       cat_array.push("pre");
     }
@@ -347,20 +348,14 @@ gbif.ui.view.Timeline = Backbone.View.extend({
       if(Array.isArray(cats[this.model.get("current_cat")]['years'][cat_array[i]])) {
         for(var j = 0; j < cats[this.model.get("current_cat")]['years'][cat_array[i]].length; j++) {
           var key = cats[this.model.get("current_cat")]['years'][cat_array[i]][j];
-
           key_array.push(key);
-
           nums_array = nums_array + aggr_data[key];
         }
       } else {
         var key = cats[this.model.get("current_cat")]['years'][cat_array[i]];
-
         key_array.push(key);
       }
-
-      nums_array = nums_array + aggr_data[key];
     }
-
     this.model.set("records", nums_array);
 
     this._updateLegendDesc();
@@ -375,8 +370,8 @@ gbif.ui.view.Timeline = Backbone.View.extend({
 		  config.SEARCH = _.omit(config.SEARCH, "YEAR");
 		} else {
 		  // pre 1900 needs a * in the search URL
-		  var min = (self.model.get("left_year") == "pre-1900") ? "*" : self.model.get("left_year");
-		  var max = (self.model.get("right_year") == "pre-1900") ? "*" : self.model.get("right_year");
+		  var min = (self.model.get("left_year") == "pre") ? "*" : self.model.get("left_year");
+		  var max = (self.model.get("right_year") == "pre") ? "*" : self.model.get("right_year");
 		  config.SEARCH.YEAR = min + "," + max;
 		}
     parent.postMessage({
@@ -646,7 +641,6 @@ gbif.ui.view.Timeline = Backbone.View.extend({
 		// only living or fossil need to fire events- the others trigger a slider change, which will message
 		if (this.model.get("current_cat") == "living" || this.model.get("current_cat") == "fossil") {
 		  config.SEARCH = _.omit(config.SEARCH, "YEAR"); // no year filter for living or fossil 
-		
       parent.postMessage({
         origin: window.name,
         records: this.model.get("records"),

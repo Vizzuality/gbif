@@ -166,7 +166,7 @@ var cats = {
     "title": "Everything",
     "years": {
       "no":   [0, 14, 30, 28, 29],
-      "pre":  [15, 31],
+      "pre":  [1, 15, 31],
       "1900": [2, 16, 32],
       "1910": [3, 17, 33],
       "1920": [4, 18, 34],
@@ -208,10 +208,10 @@ var config = {
   ].join('\n'),
   LAYERTYPE: "png",
   MAP: {
-    type: "TAXON",
+    type: "ALL",
     key: 1,
     layer: "classic",
-    resolution: 4,
+    resolution: 1,
     cat: "all",
     lat: 0,
     lng: 0,
